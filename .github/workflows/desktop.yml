@@ -40,6 +40,9 @@ jobs:
       - name: Build Windows Executable
         run: flutter build windows
 
+      - name: Copy PocketBase to Build Directory
+        run: xcopy /E /I pocketbase build\windows\x64\runner\Release\pocketbase
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
