@@ -28,7 +28,9 @@ class RegisterPage extends StatelessWidget {
                 "Register successful! Welcome ${state.user.email}",
               )),
             );
-            Navigator.of(context).pop();
+            Navigator.of(context).popAndPushNamed(
+              '/home',
+            );
           }
         },
         builder: (context, state) {
