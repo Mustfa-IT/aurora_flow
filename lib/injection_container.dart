@@ -24,10 +24,8 @@
 /// A [Future] that completes with an [AsyncAuthStore] instance.
 library;
 // Future<AsyncAuthStore> createAuthStore() async {}
-
-import 'dart:html' as html;
-
-import 'package:flutter/foundation.dart';
+import 'package:universal_html/html.dart' as html;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:get_it/get_it.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,8 +71,7 @@ Future<AsyncAuthStore> createAuthStore() async {
     // Web-specific implementation using cookies
     return AsyncAuthStore(
       save: (String data) async {
-        // Set a secure cookie with expiration time (e.g., 1 day)
-        final expires = DateTime.now().add(Duration(days: 1)).toUtc();
+        final expires = DateTime.now().add(Duration(days: 30));
         final cookie =
             'pb_auth=$data; SameSite=Lax; expires=${expires.toIso8601String()}; path=/';
         html.document.cookie = cookie;
