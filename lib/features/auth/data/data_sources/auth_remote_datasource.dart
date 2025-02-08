@@ -54,7 +54,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         "password": password,
         "passwordConfirm": password,
         "email": email,
-        "emailVisibility": "public",
+        "emailVisibility": true,
         "name": name,
       };
       final authResponse =
