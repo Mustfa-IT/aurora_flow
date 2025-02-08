@@ -27,10 +27,8 @@ class AppRouter {
       if (pocketBase.authStore.isValid ||
           authState is AuthSessionActive ||
           authState is AuthSuccess) {
-        // If the user is authenticated, redirect to '/home'
         return '/home';
       } else {
-        // If the user is not authenticated, redirect to '/login'
         return '/login';
       }
     },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_app/core/router/app_router.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
@@ -7,6 +8,9 @@ import 'package:task_app/injection_container.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Use the 'usePathUrlStrategy' function from the 'flutter_web_plugins' package
+  usePathUrlStrategy();
+  
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   await setupLocator(sharedPreferences); // dependency injection setup
   runApp(const MyApp());
