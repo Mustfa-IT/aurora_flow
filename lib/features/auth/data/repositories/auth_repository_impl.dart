@@ -2,6 +2,15 @@ import 'package:task_app/features/auth/data/data_sources/auth_remote_datasource.
 import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/auth/domain/repository/auth_repository.dart';
 
+/// Implementation of the [AuthRepository] interface.
+///
+/// This class is responsible for handling authentication-related operations
+/// by utilizing the [AuthRemoteDataSource] to interact with the remote data source.
+///
+/// The [AuthRepositoryImpl] class provides methods to perform user login.
+///
+/// - [remoteDataSource]: The remote data source used for authentication operations.
+///
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
 

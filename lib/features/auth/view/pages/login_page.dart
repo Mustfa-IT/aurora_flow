@@ -1,6 +1,26 @@
+/// A stateless widget that represents the login page of the application.
+/// 
+/// This page contains text fields for the user to input their email and password,
+/// and a login button to initiate the login process. It uses the `BlocConsumer`
+/// widget to listen to the authentication state and display appropriate messages
+/// or loading indicators.
+/// 
+/// The `emailController` and `passwordController` are used to manage the text
+/// input for the email and password fields respectively.
+/// 
+/// The `BeginLogin` method is called when the login button is pressed. It reads
+/// the email and password from the text controllers and dispatches an
+/// `AuthLoginRequested` event to the `AuthBloc`.
+///
+/// The `listener` in the `BlocConsumer` displays a `SnackBar` with a message
+/// depending on whether the login was successful or failed.
+/// 
+/// The `builder` in the `BlocConsumer` displays a loading indicator when the
+/// authentication state is `AuthLoading`, and otherwise displays the login form.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
+
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
 
@@ -15,17 +35,21 @@ class LoginPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Login')),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
+          // Don't Change THE code below
           if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Login failed: ${state.error}")),
             );
           } else if (state is AuthSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Login successful! Welcome ${state.user.email}")),
+              SnackBar(
+                  content:
+                      Text("Login successful! Welcome ${state.user.email}")),
             );
           }
         },
         builder: (context, state) {
+          //
           if (state is AuthLoading) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -45,11 +69,7 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    final email = emailController.text.trim();
-                    final password = passwordController.text.trim();
-                    context.read<AuthBloc>().add(
-                          AuthLoginRequested(email: email, password: password),
-                        );
+                    BeginLogin(context);
                   },
                   child: const Text("Login"),
                 ),
@@ -59,5 +79,13 @@ class LoginPage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void BeginLogin(BuildContext context) {
+    final email = emailController.text;
+    final password = passwordController.text;
+    context
+        .read<AuthBloc>()
+        .add(AuthLoginRequested(email: email, password: password));
   }
 }

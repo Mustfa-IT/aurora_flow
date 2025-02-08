@@ -1,3 +1,30 @@
+/// Sets up the service locator with necessary dependencies for the application.
+///
+/// This function registers various services and repositories with the service locator
+/// to enable dependency injection throughout the application. It configures the
+/// PocketBase instance, remote data sources, repositories, use cases, and BLoC.
+///
+/// The function also handles platform-specific implementations for authentication
+/// storage using cookies for web and SharedPreferences for mobile.
+///
+/// Parameters:
+/// - [sharedPreferences]: An instance of [SharedPreferences] for storing authentication data on mobile.
+///
+/// Returns:
+/// A [Future] that completes when the setup is done.
+//Future<void> setupLocator(SharedPreferences sharedPreferences) async {}
+
+/// Creates an [AsyncAuthStore] for storing authentication data.
+///
+/// This function creates an [AsyncAuthStore] with platform-specific implementations:
+/// - For web, it uses cookies to store authentication data.
+/// - For mobile, it uses [SharedPreferences] to store authentication data.
+///
+/// Returns:
+/// A [Future] that completes with an [AsyncAuthStore] instance.
+library;
+// Future<AsyncAuthStore> createAuthStore() async {}
+
 import 'dart:html' as html;
 
 import 'package:flutter/foundation.dart';

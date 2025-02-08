@@ -7,6 +7,56 @@ import 'package:task_app/features/auth/domain/usecases/login.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
 
+/// The `AuthBloc` class is responsible for handling authentication-related events and states.
+/// It extends the `Bloc` class from the `flutter_bloc` package and manages the following events:
+/// - `AuthLoginRequested`: Triggered when a login request is made.
+/// - `AuthCheckSession`: Triggered to check if there is an active session.
+///
+/// The `AuthBloc` class uses the following dependencies:
+/// - `Login`: A use case for handling login logic.
+/// - `PocketBase`: An instance of PocketBase for session management.
+///
+/// The initial state of the `AuthBloc` is `AuthInitial`.
+///
+/// Methods:
+/// - `_onLoginRequested`: Handles the `AuthLoginRequested` event. It attempts to log in the user
+///   with the provided email and password, and emits `AuthLoading`, `AuthSuccess`, or `AuthFailure`
+///   states based on the outcome.
+/// - `_onCheckSession`: Handles the `AuthCheckSession` event. It checks the PocketBase instance
+///   for a valid session and emits `AuthSessionActive` or `AuthSessionEmpty` states based on the
+///   session status.
+///
+/// Usage:
+///
+/// To use the `AuthBloc`, you can dispatch events to it using the `add` method.
+/// ```dart
+///   context.read<AuthBloc>().add(AuthLoginRequested(email: 'user@example.com', password: 'password'));
+/// ```
+///
+/// You can also listen to the state changes in the UI using the `BlocBuilder` widget.
+/// in the UI:
+/// ```dart
+/// BlocBuilder<AuthBloc, AuthState>(
+///   builder: (context, state) {
+///     if (state is AuthLoading) {
+///       return CircularProgressIndicator();
+///     } else if (state is AuthSuccess) {
+///       return Text('Logged in as: ${state.user.email}');
+///     } else if (state is AuthFailure) {
+///       return Text('Login failed: ${state.error}');
+///     } else {
+///       return ElevatedButton(
+///         onPressed: () {
+///           // Dispatch the AuthCheckSession event
+///           context.read<AuthBloc>().add(AuthCheckSession());
+///         },
+///         child: Text('Check Session'),
+///       );
+///     }
+///   },
+/// )
+/// ```
+
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Login login;
   final PocketBase pocketBase;
