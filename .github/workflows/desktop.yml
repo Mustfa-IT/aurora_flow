@@ -7,20 +7,29 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:  # Allows manual triggering
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest  # Use Windows environment
+    runs-on: windows-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Cache Flutter SDK
+        uses: actions/cache@v4
+        with:
+          path: C:\Users\runneradmin\flutter
+          key: flutter-3.27.4-${{ runner.os }}
+          restore-keys: |
+            flutter-3.27.4-
+            flutter-
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.27.4' # Use stable Flutter version
+          flutter-version: '3.27.4'
 
       - name: Enable Windows Support
         run: flutter config --enable-windows-desktop
