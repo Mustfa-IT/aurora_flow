@@ -11,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Use the 'usePathUrlStrategy' function from the 'flutter_web_plugins' package
   usePathUrlStrategy();
-  
+
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   await setupLocator(sharedPreferences); // dependency injection setup
   // CODE BLOCK ENDS
@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp.router(
+        title: 'Aurora Flow',
         debugShowCheckedModeBanner: false,
         routerConfig: AppRouter.router,
       ),
