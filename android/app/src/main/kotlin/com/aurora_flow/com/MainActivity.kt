@@ -1,4 +1,4 @@
-package com.example.task_app
+package com.aurora_flow.com
 
 import io.flutter.embedding.android.FlutterActivity
 
