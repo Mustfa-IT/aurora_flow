@@ -18,8 +18,7 @@ Aurora Flow is a task and time management application designed to help users org
 To run the backend, which is called PocketBase, navigate to the `pocketbase` folder and start the executable using the following command:
 
 ```sh
-    cd /pocketbase
-    .\task_app.exe serve
+    .\pocketbase\task_app.exe serve
 ```
 
 ## Requirements
@@ -51,8 +50,7 @@ To run the backend, which is called PocketBase, navigate to the `pocketbase` fol
 4. Start the Backend Server :
 
     ```sh
-    cd /pocketbase
-    .\task_app.exe serve
+   .\pocketbase\task_app.exe serve
     ```
 
 5. Start the App :
