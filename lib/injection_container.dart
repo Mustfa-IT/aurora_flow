@@ -23,7 +23,9 @@
 /// Returns:
 /// A [Future] that completes with an [AsyncAuthStore] instance.
 library;
+
 // Future<AsyncAuthStore> createAuthStore() async {}
+import 'package:task_app/features/auth/domain/usecases/register.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:get_it/get_it.dart';
@@ -61,9 +63,16 @@ Future<void> setupLocator(SharedPreferences sharedPreferences) async {
   // Register the login use case.
   sl.registerLazySingleton<Login>(() => Login(sl<AuthRepository>()));
 
+  // Register the register use case.
+  sl.registerLazySingleton<Register>(() => Register(sl<AuthRepository>()));
+
   // Register the AuthBloc.
   sl.registerFactory<AuthBloc>(
-      () => AuthBloc(login: sl<Login>(), pocketBase: sl<PocketBase>()));
+    () => AuthBloc(
+        login: sl<Login>(),
+        pocketBase: sl<PocketBase>(),
+        register: sl<Register>()),
+  );
 }
 
 Future<AsyncAuthStore> createAuthStore() async {

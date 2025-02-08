@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:task_app/core/router/app_router.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
+import 'package:task_app/features/auth/view/pages/auth_page.dart';
+import 'package:task_app/features/home/view/pages/home_page.dart';
 import 'package:task_app/injection_container.dart';
 
 void main() async {
@@ -26,10 +27,28 @@ class MyApp extends StatelessWidget {
           create: (context) => sl<AuthBloc>()..add(const AuthCheckSession()),
         ),
       ],
-      child: MaterialApp.router(
+      child: MaterialApp(
+        routes: {
+          '/home': (context) => const HomePage(),
+          '/login': (context) => const AuthPage(),
+          '/register': (context) => const AuthPage(),
+        },
         title: 'Aurora Flow',
         debugShowCheckedModeBanner: false,
-        routerConfig: AppRouter.router,
+        home: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is AuthInitial || state is AuthLoading) {
+              return const Center(
+                  child: CircularProgressIndicator(
+                color: Colors.red,
+              ));
+            } else if (state is AuthSuccess || state is AuthFailure) {
+              return const HomePage();
+            } else {
+              return const AuthPage();
+            }
+          },
+        ),
       ),
     );
   }

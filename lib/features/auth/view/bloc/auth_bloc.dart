@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/auth/domain/usecases/login.dart';
+import 'package:task_app/features/auth/domain/usecases/register.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -59,13 +60,29 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Login login;
+  final Register register;
   final PocketBase pocketBase;
   AuthBloc({
     required this.login,
+    required this.register,
     required this.pocketBase,
   }) : super(AuthInitial()) {
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthCheckSession>(_onCheckSession);
+    on<AuthRegisterRequested>(_onRegisterRequested);
+  }
+
+  Future<void> _onRegisterRequested(
+    AuthRegisterRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      final user = await register(event.email, event.password,event.name);
+      emit(AuthSuccess(user: user));
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
   }
 
   Future<void> _onLoginRequested(

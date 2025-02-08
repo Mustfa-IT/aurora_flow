@@ -25,6 +25,18 @@ class AuthLoginRequested extends AuthEvent {
   List<Object> get props => [email, password];
 }
 
+class AuthRegisterRequested extends AuthEvent {
+  final String email;
+  final String password;
+  final String name;
+
+  const AuthRegisterRequested({
+    required this.email,
+    required this.password,
+    required this.name,
+  });
+}
+
 /// Event to check if there is an active user session.
 class AuthCheckSession extends AuthEvent {
   /// Creates an instance of [AuthCheckSession].

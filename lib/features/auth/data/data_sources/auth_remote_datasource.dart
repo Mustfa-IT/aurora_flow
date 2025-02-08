@@ -9,6 +9,12 @@ abstract class AuthRemoteDataSource {
   ///
   /// Throws an [Exception] if the login fails.
   Future<UserModel> login(String email, String password);
+
+  /// Registers a user with the provided [email] and [password].
+  /// Returns a [UserModel] containing user data if the registration is successful.
+  /// Throws an [Exception] if the registration fails.
+  ///
+  Future<UserModel> register(String email, String password, String name);
 }
 
 /// Implementation of [AuthRemoteDataSource] that uses PocketBase for authentication.
@@ -21,8 +27,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   /// The [pocketBase] instance is required and must be injected.
   AuthRemoteDataSourceImpl({required this.pocketBase});
 
-  @override
-
   /// Logs in a user with the provided [email] and [password] using PocketBase.
   ///
   /// Calls PocketBase’s `authWithPassword` method on the 'users' collection.
@@ -30,6 +34,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   /// Returns a [UserModel] containing user data if the login is successful.
   ///
   /// Throws an [Exception] if the login fails.
+  @override
   Future<UserModel> login(String email, String password) async {
     try {
       final authResponse = await pocketBase
@@ -39,6 +44,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return UserModel.fromJson(authResponse.record.toJson());
     } catch (e) {
       throw Exception("Login failed: $e");
+    }
+  }
+
+  @override
+  Future<UserModel> register(String email, String password, String name) async {
+    try {
+      final body = <String, dynamic>{
+        "password": password,
+        "passwordConfirm": password,
+        "email": email,
+        "emailVisibility": "public",
+        "name": name,
+      };
+      final authResponse =
+          await pocketBase.collection('users').create(body: body);
+
+      return UserModel.fromJson(authResponse.toJson());
+    } catch (e) {
+      throw Exception("failed: $e");
     }
   }
 }

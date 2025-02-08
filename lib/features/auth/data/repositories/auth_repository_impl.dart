@@ -25,4 +25,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
     return userModel;
   }
+
+  @override
+  Future<User> register(String email, String password,String name) {
+    final userModel = remoteDataSource.register(email, password,name);
+    return userModel;
+  }
 }
