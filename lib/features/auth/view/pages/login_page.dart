@@ -17,6 +17,7 @@
 ///
 /// The `builder` in the `BlocConsumer` displays a loading indicator when the
 /// authentication state is `AuthLoading`, and otherwise displays the login form.
+library;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
