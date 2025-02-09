@@ -27,8 +27,23 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<User> register(String email, String password,String name) {
-    final userModel = remoteDataSource.register(email, password,name);
+  Future<User> register(String email, String password, String name) {
+    final userModel = remoteDataSource.register(email, password, name);
     return userModel;
+  }
+
+  @override
+  Future<void> confirmEmail(String token) async {
+    return await remoteDataSource.confirmEmail(token);
+  }
+
+  @override
+  void logout() {
+    remoteDataSource.logout();
+  }
+
+  @override
+  Future<void> sendVerificationEmail(String email) {
+    return remoteDataSource.sendVerificationEmail(email);
   }
 }

@@ -40,6 +40,34 @@ class AuthFailure extends AuthState {
   List<Object?> get props => [error];
 }
 
+class AuthVerifySent extends AuthState {
+  final String email;
+
+  const AuthVerifySent({required this.email});
+
+  @override
+  List<Object?> get props => [email];
+}
+
+class AuthEmailVerified extends AuthState {
+  final String email;
+
+  const AuthEmailVerified({required this.email});
+
+  @override
+  List<Object?> get props => [email];
+}
+
+class AuthEmailNotVerified extends AuthState {
+  final String email;
+  final String error;
+
+  const AuthEmailNotVerified({required this.email, required this.error});
+
+  @override
+  List<Object?> get props => [email];
+}
+
 /// State emitted when a valid session exists.
 ///
 /// Contains the authenticated [user].

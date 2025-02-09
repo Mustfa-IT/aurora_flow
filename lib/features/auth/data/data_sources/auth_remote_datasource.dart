@@ -15,6 +15,18 @@ abstract class AuthRemoteDataSource {
   /// Throws an [Exception] if the registration fails.
   ///
   Future<UserModel> register(String email, String password, String name);
+
+  /// Logs out the current user.
+  /// Throws an [Exception] if the logout fails.
+  void logout();
+
+  /// Sends a verification email to the provided [email].
+  /// Throws an [Exception] if the email fails to send.
+  Future<void> sendVerificationEmail(String email);
+
+  /// Confirms the email of the user with the provided [token].
+  /// Throws an [Exception] if the email confirmation fails.
+  Future<void> confirmEmail(String token);
 }
 
 /// Implementation of [AuthRemoteDataSource] that uses PocketBase for authentication.
@@ -64,5 +76,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } catch (e) {
       throw Exception("failed: $e");
     }
+  }
+
+  @override
+  void logout() {
+    pocketBase.authStore.clear();
+  }
+
+  @override
+  Future<void> sendVerificationEmail(String email) async {
+    await pocketBase.collection('users').requestVerification(email);
+    return Future.value();
+  }
+
+  @override
+  Future<void> confirmEmail(String token) async {
+    await pocketBase.collection('users').confirmVerification(token);
   }
 }
