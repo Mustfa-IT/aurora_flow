@@ -109,7 +109,7 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 30),
                     const Text(
-                      'or with your Meister account',
+                      'or with your Aurora account',
                       style: TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 20),
