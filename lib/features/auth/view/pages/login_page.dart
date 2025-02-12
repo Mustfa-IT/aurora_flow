@@ -110,10 +110,14 @@ class LoginPage extends StatelessWidget {
                     const SizedBox(height: 30),
                     const Text(
 <<<<<<< HEAD
+<<<<<<< HEAD
                       'or with your Aurora account',
 =======
                       'or with your Meister account',
 >>>>>>> cd7945f (Refactor LoginPage layout for improved UI and add Google login option)
+=======
+                      'or with your Aurora account',
+>>>>>>> dddfabd (Update login page text to reflect new branding)
                       style: TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 20),
