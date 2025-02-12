@@ -1,3 +1,5 @@
+import 'package:fpdart/fpdart.dart';
+import 'package:task_app/core/common/failure.dart';
 import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/auth/domain/repository/auth_repository.dart';
 
@@ -19,9 +21,9 @@ import 'package:task_app/features/auth/domain/repository/auth_repository.dart';
 /// - `Future<User> call(String email, String password)`: Performs the login
 ///   operation with the provided email and password, and returns a [User]
 ///   entity.
-/// 
+///
 /// See also: [AuthRepository], [User]
-/// 
+///
 /// Note: This class is a use case, and should not contain any business logic.
 /// It should only interact with the repository to perform the required
 /// operations.
@@ -30,7 +32,14 @@ class Login {
 
   Login(this.repository);
 
-  Future<User> call(String email, String password) async {
-    return await repository.login(email, password);
+  Future<Either<Failure, User>> call(String email, String password) async {
+    try {
+      final user = await repository.login(email, password);
+      return Right(user);
+    } catch (e) {
+      return Left(ServerFailure(
+          message: "Invalid email or password",
+          exceptionMessage: e.toString()));
+    }
   }
 }

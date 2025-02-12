@@ -25,7 +25,9 @@
 library;
 
 // Future<AsyncAuthStore> createAuthStore() async {}
+import 'package:task_app/features/auth/domain/usecases/logout.dart';
 import 'package:task_app/features/auth/domain/usecases/register.dart';
+import 'package:task_app/features/auth/domain/usecases/send_verification_email.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:get_it/get_it.dart';
@@ -65,13 +67,18 @@ Future<void> setupLocator(SharedPreferences sharedPreferences) async {
 
   // Register the register use case.
   sl.registerLazySingleton<Register>(() => Register(sl<AuthRepository>()));
-
+  // Register the send verification email use case.
+  sl.registerLazySingleton(() => SendVerificationEmail(sl<AuthRepository>()));
+  // Register the logout use case.
+  sl.registerLazySingleton(() => Logout(sl<AuthRepository>()));
   // Register the AuthBloc.
   sl.registerFactory<AuthBloc>(
     () => AuthBloc(
         login: sl<Login>(),
         pocketBase: sl<PocketBase>(),
-        register: sl<Register>()),
+        register: sl<Register>(),
+        verifyEmail: sl<SendVerificationEmail>(),
+        logout: sl<Logout>()),
   );
 }
 

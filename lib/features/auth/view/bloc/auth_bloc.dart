@@ -3,7 +3,9 @@ import 'package:equatable/equatable.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/auth/domain/usecases/login.dart';
+import 'package:task_app/features/auth/domain/usecases/logout.dart';
 import 'package:task_app/features/auth/domain/usecases/register.dart';
+import 'package:task_app/features/auth/domain/usecases/send_verification_email.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -61,15 +63,49 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Login login;
   final Register register;
+  final SendVerificationEmail verifyEmail;
+  final Logout logout;
   final PocketBase pocketBase;
   AuthBloc({
     required this.login,
     required this.register,
+    required this.verifyEmail,
+    required this.logout,
     required this.pocketBase,
   }) : super(AuthInitial()) {
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthCheckSession>(_onCheckSession);
     on<AuthRegisterRequested>(_onRegisterRequested);
+    on<AuthRequestVerifyEmail>(_onRequestVerifyEmail);
+    on<AuthLogoutRequested>(_onLogoutRequested);
+  }
+  void _onLogoutRequested(
+    AuthLogoutRequested event,
+    Emitter<AuthState> emit,
+  ) {
+    var res = logout();
+    res.fold((l) {
+      emit(AuthFailure(error: l.message));
+    }, (r) {
+      emit(AuthInitial());
+    });
+  }
+
+  Future<void> _onRequestVerifyEmail(
+    AuthRequestVerifyEmail event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      final response = await verifyEmail(event.email);
+      response.fold((l) {
+        emit(AuthEmailNotVerified(email: event.email, error: l.message));
+      }, (r) {
+        emit(AuthVerifySent(email: event.email));
+      });
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
   }
 
   Future<void> _onRegisterRequested(
@@ -78,8 +114,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      final user = await register(event.email, event.password,event.name);
-      emit(AuthSuccess(user: user));
+      final respone = await register(event.email, event.password, event.name);
+      respone.fold((l) {
+        emit(AuthFailure(error: l.message));
+      }, (r) {
+        emit(AuthSuccess(user: r));
+      });
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
     }
@@ -91,8 +131,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      final user = await login(event.email, event.password);
-      emit(AuthSuccess(user: user));
+      final reponse = await login(event.email, event.password);
+      reponse.fold((l) {
+        emit(AuthFailure(error: l.message));
+      }, (r) {
+        emit(AuthSuccess(user: r));
+      });
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
     }
