@@ -18,19 +18,26 @@
 /// The `builder` in the `BlocConsumer` displays a loading indicator when the
 /// authentication state is `AuthLoading`, and otherwise displays the login form.
 library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_app/features/auth/view/pages/register_page.dart';
 import '../bloc/auth_bloc.dart';
-class LoginPage extends StatelessWidget {
+
+class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _obscurePassword = true; // للتحكم في إظهار/إخفاء كلمة السر
 
   @override
   Widget build(BuildContext context) {
-    // نحسب عرض الشاشة ونحدد عرض نموذج الإدخال بثلث عرض الشاشة
     final screenWidth = MediaQuery.of(context).size.width;
     final formWidth = screenWidth / 3;
 
@@ -73,13 +80,15 @@ class LoginPage extends StatelessWidget {
                   children: [
                     const Text(
                       'Log In',
-                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 30),
                     // زر تسجيل الدخول عبر جوجل مع أيقونة بدلاً من الصورة
                     ElevatedButton.icon(
+                      // منطق تسجيل الدخول عبر جوجل (إن وجد)
                       onPressed: () {
-                        // منطق تسجيل الدخول عبر جوجل (إن وجد)
+                        AppUtils.showComingSoonMessage(context); // استدعاء الدالة
                       },
                       icon: const Icon(
                         Icons.g_mobiledata, // أيقونة بديلة تمثل جوجل
@@ -99,8 +108,9 @@ class LoginPage extends StatelessWidget {
                     const SizedBox(height: 10),
                     // زر للخدمات الإضافية (إن وُجدت)
                     TextButton(
+                       // منطق خدمات إضافية
                       onPressed: () {
-                        // منطق خدمات إضافية
+                       AppUtils.showComingSoonMessage(context); // استدعاء الدالة
                       },
                       child: const Text(
                         'more services',
@@ -125,28 +135,45 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // حقل كلمة المرور
+                    // حقل كلمة المرور مع أيقونة العين
                     TextField(
                       controller: passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.blue,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword =
+                                  !_obscurePassword; // تغيير الحالة
+                            });
+                          },
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      obscureText: true,
+                      obscureText: _obscurePassword, // تطبيق حالة إخفاء النص
                     ),
                     const SizedBox(height: 30),
                     BlocConsumer<AuthBloc, AuthState>(
                       listener: (context, state) {
                         if (state is AuthFailure) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Login failed: ${state.error}')),
+                            SnackBar(
+                                content: Text('Login failed: ${state.error}')),
                           );
                         } else if (state is AuthSuccess) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Login successful! Welcome ${state.user.email}')),
+                            SnackBar(
+                                content: Text(
+                                    'Login successful! Welcome ${state.user.email}')),
                           );
                           Navigator.of(context).popAndPushNamed('/home');
                         }
@@ -173,8 +200,10 @@ class LoginPage extends StatelessWidget {
                             const SizedBox(height: 10),
                             // زر "I forgot my password"
                             TextButton(
+                              // منطق استعادة كلمة المرور إن وُجد
                               onPressed: () {
-                                // منطق استعادة كلمة المرور إن وُجد
+                                AppUtils.showComingSoonMessage(
+                                    context); // استدعاء الدالة
                               },
                               child: const Text(
                                 'I forgot my password',
@@ -215,6 +244,25 @@ class LoginPage extends StatelessWidget {
   void _beginLogin(BuildContext context) {
     final email = emailController.text;
     final password = passwordController.text;
-    context.read<AuthBloc>().add(AuthLoginRequested(email: email, password: password));
+    context
+        .read<AuthBloc>()
+        .add(AuthLoginRequested(email: email, password: password));
+  }
+}
+
+//كلاس يستخدم عند الحاجة لعرض رسالة 
+class AppUtils {
+  /// دالة لعرض رسالة تنبيه
+  static void showComingSoonMessage(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "This option will be available soon. We are currently in the development phase.",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blue,
+        duration: Duration(seconds: 3),
+      ),
+    );
   }
 }
