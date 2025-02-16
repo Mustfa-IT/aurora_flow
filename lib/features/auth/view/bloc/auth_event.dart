@@ -28,11 +28,13 @@ class AuthLoginRequested extends AuthEvent {
 class AuthRegisterRequested extends AuthEvent {
   final String email;
   final String password;
+  final String confirmPassowrd;
   final String name;
 
   const AuthRegisterRequested({
     required this.email,
     required this.password,
+    required this.confirmPassowrd,
     required this.name,
   });
 }
@@ -44,9 +46,11 @@ class AuthRequestVerifyEmail extends AuthEvent {
     required this.email,
   });
 }
+
 class AuthLogoutRequested extends AuthEvent {
   const AuthLogoutRequested();
 }
+
 class AuthConfirmEmail extends AuthEvent {
   final String token;
   const AuthConfirmEmail({

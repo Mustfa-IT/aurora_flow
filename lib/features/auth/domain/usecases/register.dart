@@ -9,13 +9,15 @@ class Register {
   Register(this.repository);
 
   Future<Either<Failure, User>> call(
-      String email, String password, String name) async {
+      String email, String password, confirmPassword, String name) async {
     try {
-      final user = await repository.register(email, password, name);
+      if (confirmPassword != password) return Left(VailditonFailure(message: 'Mismatch Passowrd'));
+      final user =
+          await repository.register(email, password, confirmPassword, name);
       return Right(user);
     } catch (e) {
       return Left(ServerFailure(
-          message: "Invalid email or password",
+          message: "Invalid email or password $e",
           exceptionMessage: e.toString()));
     }
   }

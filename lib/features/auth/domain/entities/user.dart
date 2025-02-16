@@ -6,7 +6,7 @@ class User {
   final String id;
 
   /// The email address of the user.
-  final String email;
+  final String? email;
 
   /// Creates a new [User] instance with the given [id] and [email].
   ///

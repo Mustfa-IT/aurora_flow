@@ -219,7 +219,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     context.read<AuthBloc>().add(
-          AuthRegisterRequested(email: email, password: password, name: name),
+          AuthRegisterRequested(email: email, password: password,confirmPassowrd: confirmPassword, name: name),
         );
   }
 }

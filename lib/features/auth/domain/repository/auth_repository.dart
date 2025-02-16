@@ -9,7 +9,7 @@ abstract class AuthRepository {
   Future<User> login(String email, String password);
 
   /// Registers a user with the given [email] and [password].
-  Future<User> register(String email, String password, String name);
+  Future<User> register(String email, String password,String confirmPassword, String name);
 
   /// Logs out the current user.
   void logout();
