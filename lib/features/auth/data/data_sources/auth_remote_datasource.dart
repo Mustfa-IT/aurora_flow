@@ -14,7 +14,7 @@ abstract class AuthRemoteDataSource {
   /// Returns a [UserModel] containing user data if the registration is successful.
   /// Throws an [Exception] if the registration fails.
   ///
-  Future<UserModel> register(String email, String password, String name);
+  Future<UserModel> register(String email, String password,String confirmPassword, String name);
 
   /// Logs out the current user.
   /// Throws an [Exception] if the logout fails.
@@ -60,11 +60,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> register(String email, String password, String name) async {
+  Future<UserModel> register(String email, String password,String confirmPassword, String name) async {
     try {
       final body = <String, dynamic>{
         "password": password,
-        "passwordConfirm": password,
+        "passwordConfirm": confirmPassword,
         "email": email,
         "emailVisibility": true,
         "name": name,
