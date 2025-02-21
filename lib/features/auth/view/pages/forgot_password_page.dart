@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
+
   @override
   _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
 }
@@ -53,6 +55,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 }
 
 class VerificationCodePage extends StatefulWidget {
+  const VerificationCodePage({super.key});
+
   @override
   _VerificationCodePageState createState() => _VerificationCodePageState();
 }
@@ -105,6 +109,8 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
 }
 
 class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({super.key});
+
   @override
   _ResetPasswordPageState createState() => _ResetPasswordPageState();
 }
@@ -167,7 +173,7 @@ class AuthFormContainer extends StatelessWidget {
   final String subtitle;
   final List<Widget> children;
 
-  const AuthFormContainer({
+  const AuthFormContainer({super.key, 
     required this.title,
     required this.subtitle,
     required this.children,
@@ -215,7 +221,7 @@ class CustomTextField extends StatefulWidget {
   final IconData prefixIcon;
   final bool isPassword;
 
-  const CustomTextField({
+  const CustomTextField({super.key, 
     required this.controller,
     required this.labelText,
     required this.prefixIcon,
@@ -262,7 +268,7 @@ class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
 
-  const CustomButton({
+  const CustomButton({super.key, 
     required this.text,
     required this.onPressed,
   });

@@ -21,7 +21,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_app/features/auth/view/pages/ForgotPassword_Page.dart';
+import 'package:task_app/features/auth/view/pages/forgot_password_page.dart';
 import 'package:task_app/features/auth/view/pages/register_page.dart';
 import '../bloc/auth_bloc.dart';
 
