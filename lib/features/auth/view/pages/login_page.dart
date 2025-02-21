@@ -21,6 +21,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_app/features/auth/view/pages/ForgotPassword_Page.dart';
 import 'package:task_app/features/auth/view/pages/register_page.dart';
 import '../bloc/auth_bloc.dart';
 
@@ -202,12 +203,14 @@ class _LoginPageState extends State<LoginPage> {
                             TextButton(
                               // منطق استعادة كلمة المرور إن وُجد
                               onPressed: () {
-                                AppUtils.showComingSoonMessage(
-                                    context); // استدعاء الدالة
+                                     Navigator.of(context).push(
+                                       MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                                                );
                               },
                               child: const Text(
                                 'I forgot my password',
                                 style: TextStyle(color: Colors.blue),
+                                
                               ),
                             ),
                           ],
