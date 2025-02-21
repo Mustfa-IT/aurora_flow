@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -114,7 +116,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      final respone = await register(event.email, event.password, event.name);
+      final respone = await register(
+          event.email, event.password, event.confirmPassowrd, event.name);
       respone.fold((l) {
         emit(AuthFailure(error: l.message));
       }, (r) {
@@ -159,6 +162,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = User(
         id: recordMap['id'] as String,
         email: recordMap['email'] as String,
+        collectionId: recordMap['collectionId'],
+        collectionName: recordMap['collectionName'],
+        emailVisibility: recordMap['emailVisibility'],
+        verified: recordMap['verified'] == 'true' ? true : false,
+        avatar: recordMap['avatar'],
+        created: DateTime.parse(recordMap['created']),
+        updated: DateTime.parse(recordMap['updated']),
       );
       emit(AuthSessionActive(user: user));
     } else {

@@ -14,7 +14,8 @@ abstract class AuthRemoteDataSource {
   /// Returns a [UserModel] containing user data if the registration is successful.
   /// Throws an [Exception] if the registration fails.
   ///
-  Future<UserModel> register(String email, String password,String confirmPassword, String name);
+  Future<UserModel> register(
+      String email, String password, String confirmPassword, String name);
 
   /// Logs out the current user.
   /// Throws an [Exception] if the logout fails.
@@ -53,14 +54,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           .collection('users')
           .authWithPassword(email, password);
 
-      return UserModel.fromJson(authResponse.record.toJson());
+      return UserModel.fromJson(authResponse.record.toJson().toString());
     } catch (e) {
       throw Exception("Login failed: $e");
     }
   }
 
   @override
-  Future<UserModel> register(String email, String password,String confirmPassword, String name) async {
+  Future<UserModel> register(String email, String password,
+      String confirmPassword, String name) async {
     try {
       final body = <String, dynamic>{
         "password": password,
@@ -69,10 +71,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         "emailVisibility": true,
         "name": name,
       };
+
       final authResponse =
           await pocketBase.collection('users').create(body: body);
-
-      return UserModel.fromJson(authResponse.toJson());
+      return UserModel.fromJson(authResponse.toJson().toString());
     } catch (e) {
       throw Exception("failed: $e");
     }
