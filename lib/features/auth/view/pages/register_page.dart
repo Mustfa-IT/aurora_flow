@@ -14,7 +14,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -219,8 +220,15 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     context.read<AuthBloc>().add(
-          AuthRegisterRequested(email: email, password: password,confirmPassowrd: confirmPassword, name: name),
+          AuthRegisterRequested(
+              email: email,
+              password: password,
+              confirmPassowrd: confirmPassword,
+              name: name),
+        );
+
+    context.read<AuthBloc>().add(
+          AuthRequestVerifyEmail(email: email),
         );
   }
 }
-

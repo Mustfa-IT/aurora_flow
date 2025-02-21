@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
                   child: CircularProgressIndicator(
                 color: Colors.red,
               ));
-            } else if (state is AuthSuccess || state is AuthSessionActive) {
+            } else if (state is AuthSessionActive) {
               return const HomePage();
             } else {
               return const AuthPage();
@@ -59,5 +59,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-  
 }
