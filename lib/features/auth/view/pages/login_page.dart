@@ -84,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                           TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 30),
-                    // زر تسجيل الدخول عبر جوجل مع أيقونة بدلاً من الصورة
+                    // زر تسجيل الدخول عبر جوجل مع أيقونة   
                     ElevatedButton.icon(
                       // منطق تسجيل الدخول عبر جوجل (إن وجد)
                       onPressed: () {
