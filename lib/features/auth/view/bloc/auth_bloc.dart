@@ -6,7 +6,10 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/auth/domain/usecases/login.dart';
 import 'package:task_app/features/auth/domain/usecases/logout.dart';
+import 'package:task_app/features/auth/domain/usecases/on_user_verify.dart';
+import 'package:task_app/features/auth/domain/usecases/refresh_token.dart';
 import 'package:task_app/features/auth/domain/usecases/register.dart';
+import 'package:task_app/features/auth/domain/usecases/reset_password.dart';
 import 'package:task_app/features/auth/domain/usecases/send_verification_email.dart';
 
 part 'auth_event.dart';
@@ -65,14 +68,20 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Login login;
   final Register register;
+  final OnUserVerify onUserVerify;
   final SendVerificationEmail verifyEmail;
   final Logout logout;
+  final RefreshToken refreshToken;
+  final ResetPassword resetPassword;
   final PocketBase pocketBase;
   AuthBloc({
     required this.login,
     required this.register,
     required this.verifyEmail,
     required this.logout,
+    required this.onUserVerify,
+    required this.refreshToken,
+    required this.resetPassword,
     required this.pocketBase,
   }) : super(AuthInitial()) {
     on<AuthLoginRequested>(_onLoginRequested);
@@ -80,7 +89,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthRegisterRequested>(_onRegisterRequested);
     on<AuthRequestVerifyEmail>(_onRequestVerifyEmail);
     on<AuthLogoutRequested>(_onLogoutRequested);
+    on<AuthEmailVerifiedCallBack>(_onEmailVerifiedCallBack);
+    on<AuthPasswordResetRequested>(_onPasswordResetRequested);
   }
+  void _onPasswordResetRequested(
+    AuthPasswordResetRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      final response = await resetPassword(event.email);
+      response.fold((l) {
+        emit(AuthPasswordResetFailed(email: event.email, error: l.message));
+      }, (r) {
+        emit(AuthPasswordResetSent(email: event.email));
+      });
+    } catch (e) {
+      emit(AuthPasswordResetFailed(email: event.email, error: e.toString()));
+    }
+  }
+
+  void _onEmailVerifiedCallBack(
+    AuthEmailVerifiedCallBack event,
+    Emitter<AuthState> emit,
+  ) {
+    emit(AuthEmailVerified(email: event.email));
+  }
+
   void _onLogoutRequested(
     AuthLogoutRequested event,
     Emitter<AuthState> emit,
@@ -102,8 +136,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final response = await verifyEmail(event.email);
       response.fold((l) {
         emit(AuthEmailNotVerified(email: event.email, error: l.message));
-      }, (r) {
+      }, (r) async {
         emit(AuthVerifySent(email: event.email));
+        print("user id: ${event.userId}");
+        // Use the OnUserVerify use case to handle user verification callback
+        await onUserVerify(event.userId, () async {
+          add(AuthEmailVerifiedCallBack(email: event.userId));
+        });
       });
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
@@ -152,25 +191,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // Check the PocketBase instance for a valid session
     if (pocketBase.authStore.isValid) {
       // Retrieve the stored record.
-      final record = pocketBase.authStore.record;
-      // Convert the record (assumed to be a Map<String, dynamic>) to a User entity.
-      if (record == null) {
-        emit(AuthSessionEmpty());
-        return;
+      refreshToken();
+      if (pocketBase.authStore.record != null && pocketBase.authStore.isValid) {
+        // Emit the AuthSessionActive state with the authenticated user.
+        final map = pocketBase.authStore.record!.toJson();
+        try {
+          final user = User(
+            id: map['id'] as String,
+            email: map['email'] as String,
+            name: map['name'] as String,
+            collectionId: map['collectionId'] as String,
+            collectionName: map['collectionName'] as String,
+            emailVisibility: map['emailVisibility'] as bool,
+            verified: map['verified'] as bool,
+            avatar: map['avatar'] as String,
+            created: DateTime.parse(map['created']),
+            updated: DateTime.parse(map['updated']),
+          );
+          emit(AuthSessionActive(user: user));
+        } catch (e) {
+          print('Error: $e');
+          emit(AuthSessionEmpty());
+        }
       }
-      var recordMap = record.toJson();
-      final user = User(
-        id: recordMap['id'] as String,
-        email: recordMap['email'] as String,
-        collectionId: recordMap['collectionId'],
-        collectionName: recordMap['collectionName'],
-        emailVisibility: recordMap['emailVisibility'],
-        verified: recordMap['verified'] == 'true' ? true : false,
-        avatar: recordMap['avatar'],
-        created: DateTime.parse(recordMap['created']),
-        updated: DateTime.parse(recordMap['updated']),
-      );
-      emit(AuthSessionActive(user: user));
     } else {
       emit(AuthSessionEmpty());
     }

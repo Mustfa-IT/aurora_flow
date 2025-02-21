@@ -26,7 +26,7 @@ import 'package:task_app/features/auth/view/pages/register_page.dart';
 import '../bloc/auth_bloc.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -233,7 +233,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Center(
               child: TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pushReplacementNamed('/auth');
                 },
                 child: const Text(
                   'Back',

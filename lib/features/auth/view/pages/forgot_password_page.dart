@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -12,154 +14,60 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: AuthFormContainer(
-            title: 'Forgot Password',
-            subtitle: 'Enter your email address to reset your password.',
-            children: [
-              // حقل إدخال البريد الإلكتروني
-              CustomTextField(
-                controller: emailController,
-                labelText: 'Email Address',
-                prefixIcon: Icons.email,
-              ),
-              const SizedBox(height: 30),
-              // زر إرسال رابط إعادة تعيين كلمة المرور
-              CustomButton(
-                text: 'Send Reset Email',
-                onPressed: () => _navigateToVerificationPage(context),
-              ),
-              const SizedBox(height: 20),
-              // زر الرجوع إلى تسجيل الدخول
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'Back to Login',
-                  style: TextStyle(color: Colors.blue, fontSize: 16),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthPasswordResetFailed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } else if (state is AuthPasswordResetSent) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  "A password reset email has been sent to ${state.email}. Please check your inbox."),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            child: AuthFormContainer(
+              title: 'Forgot Password',
+              subtitle: 'Enter your email address to reset your password.',
+              children: [
+                // حقل إدخال البريد الإلكتروني
+                CustomTextField(
+                  controller: emailController,
+                  labelText: 'Email Address',
+                  prefixIcon: Icons.email,
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _navigateToVerificationPage(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => VerificationCodePage()),
-    );
-  }
-}
-
-class VerificationCodePage extends StatefulWidget {
-  const VerificationCodePage({super.key});
-
-  @override
-  _VerificationCodePageState createState() => _VerificationCodePageState();
-}
-
-class _VerificationCodePageState extends State<VerificationCodePage> {
-  final TextEditingController codeController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: AuthFormContainer(
-            title: 'Enter Verification Code',
-            subtitle: 'Check your email for the verification code.',
-            children: [
-              // حقل إدخال رمز التحقق
-              CustomTextField(
-                controller: codeController,
-                labelText: 'Verification Code',
-                prefixIcon: Icons.verified,
-              ),
-              const SizedBox(height: 30),
-              // زر التحقق من الرمز
-              CustomButton(
-                text: 'Verify',
-                onPressed: () => _navigateToResetPasswordPage(context),
-              ),
-              const SizedBox(height: 20),
-              // زر الرجوع إلى تسجيل الدخول
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'Back',
-                  style: TextStyle(color: Colors.blue, fontSize: 16),
+                const SizedBox(height: 30),
+                // زر إرسال رابط إعادة تعيين كلمة المرور
+                CustomButton(
+                  text: 'Send Reset Email',
+                  onPressed: () => {
+                    context.read<AuthBloc>().add(
+                          AuthPasswordResetRequested(
+                              email: emailController.text.trim()),
+                        ),
+                  },
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _navigateToResetPasswordPage(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => ResetPasswordPage()),
-    );
-  }
-}
-
-class ResetPasswordPage extends StatefulWidget {
-  const ResetPasswordPage({super.key});
-
-  @override
-  _ResetPasswordPageState createState() => _ResetPasswordPageState();
-}
-
-class _ResetPasswordPageState extends State<ResetPasswordPage> {
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
-  bool isPasswordVisible = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: AuthFormContainer(
-            title: 'Reset Password',
-            subtitle: 'Enter your new password below.',
-            children: [
-              // حقل إدخال كلمة المرور الجديدة
-              CustomTextField(
-                controller: passwordController,
-                labelText: 'New Password',
-                prefixIcon: Icons.lock,
-                isPassword: true,
-              ),
-              const SizedBox(height: 10),
-              // حقل تأكيد كلمة المرور
-              CustomTextField(
-                controller: confirmPasswordController,
-                labelText: 'Confirm Password',
-                prefixIcon: Icons.lock_outline,
-                isPassword: true,
-              ),
-              const SizedBox(height: 30),
-              // زر إعادة تعيين كلمة المرور
-              CustomButton(
-                text: 'Reset Password',
-                onPressed: () {},
-              ),
-              const SizedBox(height: 20),
-              // زر الرجوع إلى تسجيل الدخول
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'Back',
-                  style: TextStyle(color: Colors.blue, fontSize: 16),
+                const SizedBox(height: 20),
+                // زر الرجوع إلى تسجيل الدخول
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text(
+                    'Back to Login',
+                    style: TextStyle(color: Colors.blue, fontSize: 16),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -173,7 +81,8 @@ class AuthFormContainer extends StatelessWidget {
   final String subtitle;
   final List<Widget> children;
 
-  const AuthFormContainer({super.key, 
+  const AuthFormContainer({
+    super.key,
     required this.title,
     required this.subtitle,
     required this.children,
@@ -221,7 +130,8 @@ class CustomTextField extends StatefulWidget {
   final IconData prefixIcon;
   final bool isPassword;
 
-  const CustomTextField({super.key, 
+  const CustomTextField({
+    super.key,
     required this.controller,
     required this.labelText,
     required this.prefixIcon,
@@ -249,7 +159,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         suffixIcon: widget.isPassword
             ? IconButton(
                 icon: Icon(
-                  isObscured ? Icons.visibility_off :Icons.visibility ,
+                  isObscured ? Icons.visibility_off : Icons.visibility,
                   color: Colors.blue,
                 ),
                 onPressed: () {
@@ -268,7 +178,8 @@ class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
 
-  const CustomButton({super.key, 
+  const CustomButton({
+    super.key,
     required this.text,
     required this.onPressed,
   });
@@ -278,7 +189,9 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30), backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+        backgroundColor: Colors.blueAccent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),

@@ -40,9 +40,11 @@ class AuthRegisterRequested extends AuthEvent {
 }
 
 class AuthRequestVerifyEmail extends AuthEvent {
+  final String userId;
   final String email;
 
   const AuthRequestVerifyEmail({
+    required this.userId,
     required this.email,
   });
 }
@@ -51,10 +53,10 @@ class AuthLogoutRequested extends AuthEvent {
   const AuthLogoutRequested();
 }
 
-class AuthConfirmEmail extends AuthEvent {
-  final String token;
-  const AuthConfirmEmail({
-    required this.token,
+class AuthEmailVerifiedCallBack extends AuthEvent {
+  final String email;
+  const AuthEmailVerifiedCallBack({
+    required this.email,
   });
 }
 
@@ -62,4 +64,10 @@ class AuthConfirmEmail extends AuthEvent {
 class AuthCheckSession extends AuthEvent {
   /// Creates an instance of [AuthCheckSession].
   const AuthCheckSession();
+}
+/// Event triggered when a password reset is requested.
+class AuthPasswordResetRequested extends AuthEvent {
+  final String email;
+
+  const AuthPasswordResetRequested({required this.email});
 }

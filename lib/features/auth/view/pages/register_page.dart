@@ -4,7 +4,7 @@ import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
 import 'package:task_app/features/auth/view/pages/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
-  RegisterPage({super.key});
+  const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -52,13 +52,20 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       );
                     } else if (state is AuthSuccess) {
+                      context.read<AuthBloc>().add(
+                            AuthRequestVerifyEmail(
+                              email: state.user.email,
+                              userId: state.user.id,
+                            ),
+                          );
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                              "Register successful! Welcome ${state.user.email}"),
+                              "A verification link has been sent to your email: ${state.user.email}"),
                         ),
                       );
-                      Navigator.of(context).popAndPushNamed('/home');
+
+                      Navigator.of(context).popAndPushNamed('/verify-email');
                     }
                   },
                   builder: (context, state) {
@@ -188,7 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Center(
               child: TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pushReplacementNamed('/auth');
                 },
                 child: const Text(
                   'Back',
@@ -225,10 +232,6 @@ class _RegisterPageState extends State<RegisterPage> {
               password: password,
               confirmPassowrd: confirmPassword,
               name: name),
-        );
-
-    context.read<AuthBloc>().add(
-          AuthRequestVerifyEmail(email: email),
         );
   }
 }

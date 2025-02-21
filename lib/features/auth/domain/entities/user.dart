@@ -1,4 +1,3 @@
-
 /// A class representing a user entity.
 ///
 /// The [User] class contains the user's unique identifier and email address.
@@ -18,12 +17,12 @@
 class User {
   /// The unique identifier of the user.
   final String id;
-
   /// The email address of the user.
   final String email;
+  final String name;
   final String collectionId;
   final String collectionName;
-  final String emailVisibility;
+  final bool emailVisibility;
   final bool verified;
   final String avatar;
   final DateTime created;
@@ -35,6 +34,7 @@ class User {
   User({
     required this.id,
     required this.email,
+    required this.name,
     required this.collectionId,
     required this.collectionName,
     required this.emailVisibility,
@@ -43,5 +43,4 @@ class User {
     required this.created,
     required this.updated,
   });
-
-  }
+}

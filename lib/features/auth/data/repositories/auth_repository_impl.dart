@@ -27,14 +27,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<User> register(String email, String password,String confirmPassword, String name) {
-    final userModel = remoteDataSource.register(email, password,confirmPassword, name);
+  Future<User> register(
+      String email, String password, String confirmPassword, String name) {
+    final userModel =
+        remoteDataSource.register(email, password, confirmPassword, name);
     return userModel;
-  }
-
-  @override
-  Future<void> confirmEmail(String token) async {
-    return await remoteDataSource.confirmEmail(token);
   }
 
   @override
@@ -43,7 +40,23 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> sendVerificationEmail(String email) {
-    return remoteDataSource.sendVerificationEmail(email);
+  Future<void> sendVerificationEmail(String email) async {
+    return await remoteDataSource.sendVerificationEmail(email);
+  }
+
+  @override
+  Future<void> onUserVerfied(String userId, Function callback) async {
+    print("user id in repository: $userId");
+    return await remoteDataSource.onUserVerfied(userId, callback);
+  }
+
+  @override
+  Future<void> refreshAuthToken() {
+    return remoteDataSource.refreshAuthToken();
+  }
+
+  @override
+  Future<void> resetPassword(String email) {
+    return remoteDataSource.resetPassword(email);
   }
 }

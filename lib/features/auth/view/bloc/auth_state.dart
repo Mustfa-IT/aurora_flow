@@ -82,3 +82,22 @@ class AuthSessionActive extends AuthState {
 
 /// State emitted when no active session is found.
 class AuthSessionEmpty extends AuthState {}
+
+class AuthPasswordResetSent extends AuthState {
+  final String email;
+
+  const AuthPasswordResetSent({required this.email});
+
+  @override
+  List<Object?> get props => [email];
+}
+
+class AuthPasswordResetFailed extends AuthState {
+  final String email;
+  final String error;
+
+  const AuthPasswordResetFailed({required this.email, required this.error});
+
+  @override
+  List<Object?> get props => [email, error];
+}

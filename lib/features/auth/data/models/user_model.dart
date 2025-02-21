@@ -25,6 +25,7 @@ class UserModel extends User {
   UserModel({
     required super.id,
     required super.email,
+    required super.name,
     required super.collectionId,
     required super.collectionName,
     required super.emailVisibility,
@@ -36,9 +37,10 @@ class UserModel extends User {
   User copyWith({
     String? id,
     String? email,
+    String? name,
     String? collectionId,
     String? collectionName,
-    String? emailVisibility,
+    bool? emailVisibility,
     bool? verified,
     String? avatar,
     DateTime? created,
@@ -47,6 +49,7 @@ class UserModel extends User {
     return User(
       id: id ?? this.id,
       email: email ?? this.email,
+      name: name ?? this.name,
       collectionId: collectionId ?? this.collectionId,
       collectionName: collectionName ?? this.collectionName,
       emailVisibility: emailVisibility ?? this.emailVisibility,
@@ -71,13 +74,29 @@ class UserModel extends User {
     };
   }
 
+  ///
+  ///
+  ///{
+  /// "collectionId": "_pb_users_auth_",
+  /// "collectionName": "users",
+  /// "id": "test",
+  /// "email": "test@example.com",
+  /// "emailVisibility": true,
+  /// "verified": true,
+  /// "name": "test",
+  /// "avatar": "filename.jpg",
+  /// "created": "2022-01-01 10:00:00.123Z",
+  /// "updated": "2022-01-01 10:00:00.123Z"
+  ///}
+  ///
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map['id'] as String,
       email: map['email'] as String,
+      name: map['name'] as String,
       collectionId: map['collectionId'] as String,
       collectionName: map['collectionName'] as String,
-      emailVisibility: map['emailVisibility'] as String,
+      emailVisibility: map['emailVisibility'] as bool,
       verified: map['verified'] as bool,
       avatar: map['avatar'] as String,
       created: DateTime.parse(map['created']),
@@ -87,8 +106,8 @@ class UserModel extends User {
 
   String toJson() => json.encode(toMap());
 
-  factory UserModel.fromJson(String source) =>
-      UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory UserModel.fromJson(Map<String, dynamic> source) =>
+      UserModel.fromMap(source);
 
   @override
   String toString() {
