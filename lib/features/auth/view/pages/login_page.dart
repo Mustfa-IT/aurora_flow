@@ -85,11 +85,12 @@ class _LoginPageState extends State<LoginPage> {
                           TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 30),
-                    // زر تسجيل الدخول عبر جوجل مع أيقونة   
+                    // زر تسجيل الدخول عبر جوجل مع أيقونة
                     ElevatedButton.icon(
                       // منطق تسجيل الدخول عبر جوجل (إن وجد)
                       onPressed: () {
-                        AppUtils.showComingSoonMessage(context); // استدعاء الدالة
+                        AppUtils.showComingSoonMessage(
+                            context); // استدعاء الدالة
                       },
                       icon: const Icon(
                         Icons.g_mobiledata, // أيقونة بديلة تمثل جوجل
@@ -109,9 +110,10 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 10),
                     // زر للخدمات الإضافية (إن وُجدت)
                     TextButton(
-                       // منطق خدمات إضافية
+                      // منطق خدمات إضافية
                       onPressed: () {
-                       AppUtils.showComingSoonMessage(context); // استدعاء الدالة
+                        AppUtils.showComingSoonMessage(
+                            context); // استدعاء الدالة
                       },
                       child: const Text(
                         'more services',
@@ -120,15 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 30),
                     const Text(
-<<<<<<< HEAD
-<<<<<<< HEAD
                       'or with your Aurora account',
-=======
-                      'or with your Meister account',
->>>>>>> cd7945f (Refactor LoginPage layout for improved UI and add Google login option)
-=======
-                      'or with your Aurora account',
->>>>>>> dddfabd (Update login page text to reflect new branding)
                       style: TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 20),
@@ -211,14 +205,15 @@ class _LoginPageState extends State<LoginPage> {
                             TextButton(
                               // منطق استعادة كلمة المرور إن وُجد
                               onPressed: () {
-                                     Navigator.of(context).push(
-                                       MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-                                                );
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ForgotPasswordPage()),
+                                );
                               },
                               child: const Text(
                                 'I forgot my password',
                                 style: TextStyle(color: Colors.blue),
-                                
                               ),
                             ),
                           ],
@@ -261,7 +256,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-//كلاس يستخدم عند الحاجة لعرض رسالة 
+//كلاس يستخدم عند الحاجة لعرض رسالة
 class AppUtils {
   /// دالة لعرض رسالة تنبيه
   static void showComingSoonMessage(BuildContext context) {
