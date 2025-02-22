@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:task_app/features/home/view/pages/widget/app-design.dart';
-import 'package:task_app/features/home/view/pages/widget/data-models.dart';
-import 'package:task_app/features/home/view/pages/widget/main-dashboard.dart';
-import 'package:task_app/features/home/view/pages/widget/profile-drawer.dart';
-import 'package:task_app/features/home/view/pages/widget/side-savigation-bar.dart';
-import 'package:task_app/features/home/view/pages/widget/sliding-menu.dart';
-import 'package:task_app/features/home/view/pages/widget/top-bar.dart';
+import 'package:task_app/features/home/view/widget/app-design.dart';
+import 'package:task_app/features/home/view/widget/data-models.dart';
+import 'package:task_app/features/home/view/widget/main-dashboard.dart';
+import 'package:task_app/features/home/view/widget/profile-drawer.dart';
+import 'package:task_app/features/home/view/widget/side-savigation-bar.dart';
+import 'package:task_app/features/home/view/widget/sliding-menu.dart';
+import 'package:task_app/features/home/view/widget/top-bar.dart';
 
 
 

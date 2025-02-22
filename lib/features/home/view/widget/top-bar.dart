@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_app/features/home/view/pages/widget/app-design.dart';
-import 'package:task_app/features/home/view/pages/widget/hoverIcon-button.dart';
+import 'package:task_app/features/home/view/widget/app-design.dart';
+import 'package:task_app/features/home/view/widget/hoverIcon-button.dart';
 
 
 // =============================================

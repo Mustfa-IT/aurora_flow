@@ -2,6 +2,7 @@
 // Data Models
 // =============================================
 // تعريف نماذج البيانات (مثال: مستخدم ومشروع)
+//استبدلها لاحقا 
 class AppUser {
   final String name;
   final String avatarUrl;
