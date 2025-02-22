@@ -5,8 +5,8 @@
 // القائمة المنزلقة التي تظهر عند اختيار تبويب معين (مثل المشاريع)
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:task_app/features/home/view/pages/widget/app-design.dart';
-import 'package:task_app/features/home/view/pages/widget/data-models.dart';
+import 'package:task_app/features/home/view/widget/app-design.dart';
+import 'package:task_app/features/home/view/widget/data-models.dart';
 
 class SlidingMenu extends StatelessWidget {
   final int selectedMenu;

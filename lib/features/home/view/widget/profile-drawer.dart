@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
-import 'package:task_app/features/home/view/pages/widget/app-design.dart';
-import 'package:task_app/features/home/view/pages/widget/hoverIcon-button.dart';
+import 'package:task_app/features/home/view/widget/app-design.dart';
+import 'package:task_app/features/home/view/widget/hoverIcon-button.dart';
 
 
 // كلاس منفصل لعرض نافذة EndDrawer عند الضغط على صورة الحساب
