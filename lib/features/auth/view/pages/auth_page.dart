@@ -24,11 +24,15 @@ class _AuthPageState extends State<AuthPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isNavigated &&
-        (context.read<AuthBloc>().state is AuthSuccess ||
-            context.read<AuthBloc>().state is AuthSessionActive)) {
+        (context.read<AuthBloc>().state is AuthSessionActive)) {
       _isNavigated = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pushNamed('/home');
+      });
+    }
+    if (context.read<AuthBloc>().state is AuthVerifySent) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushNamed('/verify-email');
       });
     }
   }
@@ -40,7 +44,8 @@ class _AuthPageState extends State<AuthPage> {
     final logoWidth = screenWidth * 0.15; // على سبيل المثال 15% من عرض الشاشة
 
     final screenHeight = MediaQuery.of(context).size.height;
-    final logoHeight = screenHeight * 0.30; // على سبيل المثال 30% من ارتفاع الشاشة
+    final logoHeight =
+        screenHeight * 0.30; // على سبيل المثال 30% من ارتفاع الشاشة
 
     return Scaffold(
       body: Stack(

@@ -2,6 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task_app/features/auth/domain/usecases/register.dart';
+import 'package:task_app/features/auth/view/pages/login_page.dart';
+import 'package:task_app/features/auth/view/pages/register_page.dart';
+import 'package:task_app/features/auth/view/pages/verify_email_page.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
 import 'package:task_app/features/auth/view/pages/auth_page.dart';
@@ -37,8 +41,10 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         routes: {
           '/home': (context) => const HomePage(),
-          '/login': (context) => const AuthPage(),
-          '/register': (context) => const AuthPage(),
+          '/login': (context) => const LoginPage(),
+          '/register': (context) => const RegisterPage(),
+          '/auth': (context) => const AuthPage(),
+          '/verify-email': (context) => const VerifyEmailPage(),
         },
         title: 'Aurora Flow',
         debugShowCheckedModeBanner: false,
@@ -49,7 +55,8 @@ class MyApp extends StatelessWidget {
                   child: CircularProgressIndicator(
                 color: Colors.red,
               ));
-            } else if (state is AuthSuccess || state is AuthSessionActive) {
+            } else if (state is AuthSessionActive) {
+              print("User is logged in");
               return const HomePage();
             } else {
               return const AuthPage();

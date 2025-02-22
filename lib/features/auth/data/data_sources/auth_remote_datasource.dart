@@ -14,7 +14,8 @@ abstract class AuthRemoteDataSource {
   /// Returns a [UserModel] containing user data if the registration is successful.
   /// Throws an [Exception] if the registration fails.
   ///
-  Future<UserModel> register(String email, String password, String name);
+  Future<UserModel> register(
+      String email, String password, String confirmPassword, String name);
 
   /// Logs out the current user.
   /// Throws an [Exception] if the logout fails.
@@ -24,9 +25,28 @@ abstract class AuthRemoteDataSource {
   /// Throws an [Exception] if the email fails to send.
   Future<void> sendVerificationEmail(String email);
 
-  /// Confirms the email of the user with the provided [token].
-  /// Throws an [Exception] if the email confirmation fails.
-  Future<void> confirmEmail(String token);
+  /// Checks if the user is verified.
+  ///
+  /// This method takes a [userId] and a [callBack] function. The [callBack] function
+  /// will be executed once the verification status is determined.
+  ///
+  /// - Parameters:
+  ///   - userId: The ID of the user to check verification status for.
+  ///   - callBack: A function to be called with the verification status.
+  ///
+  /// - Returns: A [Future] that completes when the verification check is done.
+  Future<void> onUserVerfied(String userId, Function callBack);
+
+  /// Refreshes the user's authentication token.
+  /// Throws an [Exception] if the token refresh fails.
+  /// Returns a [Future] that completes when the token is refreshed.
+  Future<void> refreshAuthToken();
+
+  /// Reset the user's password.
+  ///
+  /// This method takes a [email] and sends a password reset email to the user.
+  ///
+  Future<void> resetPassword(String email);
 }
 
 /// Implementation of [AuthRemoteDataSource] that uses PocketBase for authentication.
@@ -60,18 +80,19 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> register(String email, String password, String name) async {
+  Future<UserModel> register(String email, String password,
+      String confirmPassword, String name) async {
     try {
       final body = <String, dynamic>{
         "password": password,
-        "passwordConfirm": password,
+        "passwordConfirm": confirmPassword,
         "email": email,
         "emailVisibility": true,
         "name": name,
       };
+
       final authResponse =
           await pocketBase.collection('users').create(body: body);
-
       return UserModel.fromJson(authResponse.toJson());
     } catch (e) {
       throw Exception("failed: $e");
@@ -90,7 +111,27 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> confirmEmail(String token) async {
-    await pocketBase.collection('users').confirmVerification(token);
+  Future<void> onUserVerfied(String userId, Function callBack) async {
+    await pocketBase.collection('users').subscribe(userId, (e) {
+      var map = {
+        'verified': 'false',
+        if (e.record != null) ...e.record!.toJson(),
+      };
+      print('map: $map');
+      if (map['verified'] as bool == true) {
+        print('callback');
+        callBack();
+      }
+    });
+  }
+
+  @override
+  Future<void> refreshAuthToken() async {
+    await pocketBase.collection('users').authRefresh();
+  }
+
+  @override
+  Future<void> resetPassword(String email) async {
+    await pocketBase.collection('users').requestPasswordReset(email);
   }
 }

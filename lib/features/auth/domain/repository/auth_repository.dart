@@ -9,7 +9,8 @@ abstract class AuthRepository {
   Future<User> login(String email, String password);
 
   /// Registers a user with the given [email] and [password].
-  Future<User> register(String email, String password, String name);
+  Future<User> register(
+      String email, String password, String confirmPassword, String name);
 
   /// Logs out the current user.
   void logout();
@@ -17,6 +18,12 @@ abstract class AuthRepository {
   /// Sends a verification email to the provided [email].
   Future<void> sendVerificationEmail(String email);
 
-  /// Confirms the email of the user with the provided [token].
-  Future<void> confirmEmail(String token);
+  /// get a Callback when the user is verified
+  Future<void> onUserVerfied(String userId, Function callback);
+
+  /// Refreshes the user's authentication token.
+  Future<void> refreshAuthToken();
+
+  /// Reset the user's password.
+  Future<void> resetPassword(String email);
 }
