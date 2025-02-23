@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         routes: {
-          '/home': (context) => const HomePage(),
+          '/home': (context) =>  HomePage(),
           '/login': (context) => const LoginPage(),
           '/register': (context) => const RegisterPage(),
           '/auth': (context) => const AuthPage(),
@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
               ));
             } else if (state is AuthSessionActive) {
               print("User is logged in");
-              return const HomePage();
+              return  HomePage();
             } else {
               return const AuthPage();
             }
