@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 // Widget مخصص لإضافة تأثير توهج عند hover
 class HoverIconButton extends StatefulWidget {
   final Widget child;
@@ -38,7 +37,7 @@ class _HoverIconButtonState extends State<HoverIconButton> {
               boxShadow: _isHovered
                   ? [
                       BoxShadow(
-                        color:Colors.grey.withOpacity(0.2),
+                        color: Colors.grey.withOpacity(0.2),
                         spreadRadius: 5,
                         blurRadius: 1,
                       ),
