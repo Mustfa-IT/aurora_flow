@@ -35,19 +35,7 @@ class SideNavigationBar extends StatelessWidget {
   Widget _buildLogo() {
     return Padding(
       padding: const EdgeInsets.all(24.0),
-      child: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: const Color.fromARGB(255, 2, 73, 145).withOpacity(0.6),
-              spreadRadius: 5,
-              blurRadius: 20,
-              offset: Offset(0, 0),
-            ),
-          ],
-        ),
-        child: Image.asset('assets/logo-image2.png', width: 60),
-      ),
+      child: Image.asset('assets/logo-image2.png', width: 60),
     );
   }
 

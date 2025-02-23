@@ -6,7 +6,7 @@ import 'package:task_app/features/home/view/widget/app-design.dart';
 import 'package:task_app/features/home/view/widget/data-models.dart';
 import 'package:task_app/features/home/view/widget/main-dashboard.dart';
 import 'package:task_app/features/home/view/widget/profile-drawer.dart';
-import 'package:task_app/features/home/view/widget/side-savigation-bar.dart';
+import 'package:task_app/features/home/view/widget/side-navigation-bar.dart';
 import 'package:task_app/features/home/view/widget/sliding-menu.dart';
 import 'package:task_app/features/home/view/widget/top-bar.dart';
 
