@@ -38,9 +38,9 @@ class _HoverIconButtonState extends State<HoverIconButton> {
               boxShadow: _isHovered
                   ? [
                       BoxShadow(
-                        color:Colors.cyan.withOpacity(0.7),
-                        spreadRadius: 2,
-                        blurRadius: 10,
+                        color:Colors.grey.withOpacity(0.2),
+                        spreadRadius: 5,
+                        blurRadius: 1,
                       ),
                     ]
                   : [],
