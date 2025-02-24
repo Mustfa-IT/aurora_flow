@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:task_app/features/auth/domain/usecases/register.dart';
 import 'package:task_app/features/auth/view/pages/login_page.dart';
 import 'package:task_app/features/auth/view/pages/register_page.dart';
 import 'package:task_app/features/auth/view/pages/verify_email_page.dart';

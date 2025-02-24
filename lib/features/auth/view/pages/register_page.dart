@@ -79,9 +79,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         const Text(
                           'Sign Up',
                           style: TextStyle(
-                              fontSize: 28, fontWeight: FontWeight.bold),
+                              fontSize: 32, fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 30),
                         AvatarPicker(
                           onImageSelected: (image) {
                             setState(() {
@@ -89,14 +89,14 @@ class _RegisterPageState extends State<RegisterPage> {
                             });
                           },
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 30),
                         TextField(
                           controller: nameController,
                           decoration: InputDecoration(
                             labelText: 'Full Name',
                             prefixIcon: const Icon(Icons.person),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                         ),
@@ -107,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             labelText: 'Email',
                             prefixIcon: const Icon(Icons.email),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                         ),
@@ -132,7 +132,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               },
                             ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                         ),
@@ -158,7 +158,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               },
                             ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             errorText: _passwordError,
                           ),
@@ -172,8 +172,18 @@ class _RegisterPageState extends State<RegisterPage> {
                             backgroundColor: Colors.blue,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text(
+                            'Back',
+                            style: TextStyle(color: Colors.blue),
                           ),
                         ),
                       ],
