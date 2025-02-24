@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:task_app/features/auth/data/data_sources/auth_remote_datasource.dart';
 import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/auth/domain/repository/auth_repository.dart';
@@ -28,9 +29,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<User> register(
-      String email, String password, String confirmPassword, String name) {
-    final userModel =
-        remoteDataSource.register(email, password, confirmPassword, name);
+    String email,
+    String password,
+    String confirmPassword,
+    String name,
+    Uint8List avatarImage,
+  ) {
+    final userModel = remoteDataSource.register(
+        email, password, confirmPassword, name, avatarImage);
     return userModel;
   }
 
@@ -43,13 +49,6 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> sendVerificationEmail(String email) async {
     return await remoteDataSource.sendVerificationEmail(email);
   }
-
-  @override
-  Future<void> onUserVerfied(String userId, Function callback) async {
-    print("user id in repository: $userId");
-    return await remoteDataSource.onUserVerfied(userId, callback);
-  }
-
   @override
   Future<void> refreshAuthToken() {
     return remoteDataSource.refreshAuthToken();
@@ -58,5 +57,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> resetPassword(String email) {
     return remoteDataSource.resetPassword(email);
+  }
+  
+  @override
+  Future<void> onUserUpdates(String userId, Function callBack) {
+    return remoteDataSource.onUserUpdates(userId, callBack);
   }
 }

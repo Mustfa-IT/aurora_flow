@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:task_app/features/home/view/widget/app-design.dart';
+import 'package:task_app/core/common/app-design.dart';
 import 'package:task_app/features/home/view/widget/data-models.dart';
 import 'package:task_app/features/home/view/widget/main-dashboard.dart';
 import 'package:task_app/features/home/view/widget/profile-drawer.dart';
 import 'package:task_app/features/home/view/widget/side-navigation-bar.dart';
 import 'package:task_app/features/home/view/widget/sliding-menu.dart';
 import 'package:task_app/features/home/view/widget/top-bar.dart';
-
-
-
 
 // =============================================
 // Home Page Widget
@@ -30,13 +28,15 @@ class _HomePageState extends State<HomePage> {
   late String _greeting;
 
   // بيانات تجريبية للمستخدم والمشاريع؛ عدلها وفقاً للبيانات الحقيقية
-  final AppUser _user =
-      AppUser(name: '4Up. J', avatarUrl: 'assets/profile.png');
-  final List<Project> _projects = [];
+  User? _user;
+  final List<Project> _projects = [
+    Project(id: '1', name: 'Project 1', createdAt: DateTime.now()),
+  ];
 
   @override
   void initState() {
     super.initState();
+    _user = context.read<AuthBloc>().state.user;
     _updateTime();
   }
 
@@ -77,10 +77,17 @@ class _HomePageState extends State<HomePage> {
         if (state is! AuthSessionActive) {
           Navigator.of(context).pushReplacementNamed('/login');
         }
+        if (_user == null) {
+          _showDialog(context);
+        }
+        _user = state.user;
+        print(state.user!.name);
       },
       child: Scaffold(
         // استخدام ProfileDrawer هنا كـ EndDrawer
-        endDrawer: ProfileDrawer(),
+        endDrawer: ProfileDrawer(
+          user: _user!,
+        ),
         body: Row(
           children: [
             // القسم الأيسر: الشريط الجانبي والقائمة المنزلقة
@@ -106,8 +113,7 @@ class _HomePageState extends State<HomePage> {
                       child: SlidingMenu(
                         selectedMenu: _selectedTab,
                         projects: _projects,
-                        onClose: () =>
-                            setState(() => _showSlidingMenu = false),
+                        onClose: () => setState(() => _showSlidingMenu = false),
                       ),
                     ),
                 ],
@@ -133,10 +139,11 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     TopBar(
                       onMenuPressed: _toggleSlidingMenu,
+                      user: _user!,
                     ),
                     Expanded(
                       child: MainDashboard(
-                        userName: _user.name,
+                        userName: _user?.name ?? 'Guest',
                         timeString: _time,
                         greeting: _greeting,
                       ),
@@ -150,8 +157,24 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  void _showDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('User Not Found'),
+          content: Text('User not found. Please login again.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacementNamed('/login');
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
-
-
-
-

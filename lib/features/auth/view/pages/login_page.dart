@@ -176,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 content: Text(
-                                    'Login successful! Welcome ${state.user.email}')),
+                                    'Login successful! Welcome ${state.user!.email}')),
                           );
                           Navigator.of(context).popAndPushNamed('/home');
                         }
