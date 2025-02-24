@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:task_app/features/auth/data/models/user_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 /// An abstract class that defines the contract for remote authentication data source.
 abstract class AuthRemoteDataSource {
@@ -105,17 +106,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       };
 
       final authResponse = await pocketBase.collection('users').create(
-            body: body,
-            // files: [
-            //   if (avatarImage.single != 1)
-            //     http.MultipartFile.fromBytes(
-            //       'avatar',
-            //       avatarImage.toList(),
-            //     )
-            // ],
-          );
+        body: body,
+        files: [
+          if (avatarImage.isNotEmpty && avatarImage.length > 1)
+            http.MultipartFile.fromBytes(
+              'avatar',
+              avatarImage,
+              filename: 'avatar.jpg', // Provide a valid filename
+              contentType: MediaType(
+                  'image', 'jpeg'), // Optionally specify the content type
+            ),
+        ],
+      );
       return UserModel.fromJson(authResponse.toJson());
     } catch (e) {
+      print(e.toString());
       throw Exception("failed: $e");
     }
   }
