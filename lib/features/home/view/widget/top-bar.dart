@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:task_app/features/home/view/widget/app-design.dart';
+import 'package:task_app/core/common/app-design.dart';
+import 'package:task_app/core/config/config.dart';
+import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/home/view/widget/hoverIcon-button.dart';
 
 
@@ -8,8 +10,8 @@ import 'package:task_app/features/home/view/widget/hoverIcon-button.dart';
 // =============================================
 class TopBar extends StatelessWidget {
   final VoidCallback onMenuPressed;
-
-  const TopBar({Key? key, required this.onMenuPressed}) : super(key: key);
+  final User user;
+  const TopBar({Key? key, required this.onMenuPressed,required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +72,8 @@ class TopBar extends StatelessWidget {
                   Scaffold.of(context).openEndDrawer();
                 },
                 child: CircleAvatar(
-                  backgroundImage: AssetImage('assets/profile.png'),
+                  backgroundImage:  NetworkImage(
+                          '${Config.pocketBaseUrl}/api/files/${user.collectionId}/${user.id}/${user.avatar}'),
                   radius: 18,
                 ),
               ),

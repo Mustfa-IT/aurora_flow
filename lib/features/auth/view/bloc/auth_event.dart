@@ -30,13 +30,23 @@ class AuthRegisterRequested extends AuthEvent {
   final String password;
   final String confirmPassowrd;
   final String name;
+  final Uint8List? avatarImage;
 
   const AuthRegisterRequested({
     required this.email,
     required this.password,
     required this.confirmPassowrd,
     required this.name,
+    required this.avatarImage,
   });
+}
+
+class AuthUserUpdated extends AuthEvent {
+  final User updatedUser;
+  const AuthUserUpdated({required this.updatedUser});
+
+  @override
+  List<Object> get props => [updatedUser];
 }
 
 class AuthRequestVerifyEmail extends AuthEvent {
@@ -65,6 +75,7 @@ class AuthCheckSession extends AuthEvent {
   /// Creates an instance of [AuthCheckSession].
   const AuthCheckSession();
 }
+
 /// Event triggered when a password reset is requested.
 class AuthPasswordResetRequested extends AuthEvent {
   final String email;

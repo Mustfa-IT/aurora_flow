@@ -1,7 +1,8 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
-import 'package:task_app/features/auth/view/pages/login_page.dart';
+import 'package:task_app/features/auth/view/widgets/avatar_picker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,7 +20,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  String? _passwordError; // للتحقق من تطابق كلمة المرور
+  String? _passwordError;
+  Uint8List? _avatarImage;
 
   @override
   Widget build(BuildContext context) {
@@ -54,17 +56,16 @@ class _RegisterPageState extends State<RegisterPage> {
                     } else if (state is AuthSuccess) {
                       context.read<AuthBloc>().add(
                             AuthRequestVerifyEmail(
-                              email: state.user.email,
-                              userId: state.user.id,
+                              email: state.user!.email,
+                              userId: state.user!.id,
                             ),
                           );
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                              "A verification link has been sent to your email: ${state.user.email}"),
+                              "A verification link has been sent to your email: ${state.user!.email}"),
                         ),
                       );
-
                       Navigator.of(context).popAndPushNamed('/verify-email');
                     }
                   },
@@ -80,7 +81,15 @@ class _RegisterPageState extends State<RegisterPage> {
                           style: TextStyle(
                               fontSize: 28, fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 20),
+                        AvatarPicker(
+                          onImageSelected: (image) {
+                            setState(() {
+                              _avatarImage = image;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 20),
                         TextField(
                           controller: nameController,
                           decoration: InputDecoration(
@@ -128,7 +137,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // حقل تأكيد كلمة المرور
                         TextField(
                           controller: confirmPasswordController,
                           obscureText: _obscureConfirmPassword,
@@ -168,38 +176,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => LoginPage()),
-                            );
-                          },
-                          child: const Text(
-                            'I already have an account',
-                            style: TextStyle(color: Colors.blue, fontSize: 16),
-                          ),
-                        ),
                       ],
                     );
                   },
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 20,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacementNamed('/auth');
-                },
-                child: const Text(
-                  'Back',
-                  style: TextStyle(color: Colors.blue, fontSize: 16),
                 ),
               ),
             ),
@@ -228,10 +207,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
     context.read<AuthBloc>().add(
           AuthRegisterRequested(
-              email: email,
-              password: password,
-              confirmPassowrd: confirmPassword,
-              name: name),
+            email: email,
+            password: password,
+            confirmPassowrd: confirmPassword,
+            name: name,
+            avatarImage: _avatarImage,
+          ),
         );
   }
 }

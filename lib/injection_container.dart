@@ -26,7 +26,7 @@ library;
 
 // Future<AsyncAuthStore> createAuthStore() async {}
 import 'package:task_app/features/auth/domain/usecases/logout.dart';
-import 'package:task_app/features/auth/domain/usecases/on_user_verify.dart';
+import 'package:task_app/features/auth/domain/usecases/on_user_updates.dart';
 import 'package:task_app/features/auth/domain/usecases/refresh_token.dart';
 import 'package:task_app/features/auth/domain/usecases/register.dart';
 import 'package:task_app/features/auth/domain/usecases/reset_password.dart';
@@ -73,7 +73,7 @@ Future<void> setupLocator(SharedPreferences sharedPreferences) async {
   // Register the send verification email use case.
   sl.registerLazySingleton(() => SendVerificationEmail(sl<AuthRepository>()));
   // Register the on user verify use case.
-  sl.registerLazySingleton(() => OnUserVerify(sl<AuthRepository>()));
+  sl.registerLazySingleton(() => OnUserUpdates(sl<AuthRepository>()));
   // Register the logout use case.
   sl.registerLazySingleton(() => Logout(sl<AuthRepository>()));
   // Register the refresh token use case.
@@ -87,7 +87,7 @@ Future<void> setupLocator(SharedPreferences sharedPreferences) async {
         pocketBase: sl<PocketBase>(),
         register: sl<Register>(),
         verifyEmail: sl<SendVerificationEmail>(),
-        onUserVerify: sl<OnUserVerify>(),
+        onUserUpdates: sl<OnUserUpdates>(),
         refreshToken: sl<RefreshToken>(),
         resetPassword: sl<ResetPassword>(),
         logout: sl<Logout>()),

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_app/core/config/config.dart';
+import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
 import 'package:task_app/features/home/view/widget/hoverIcon-button.dart';
 
 // // كلاس منفصل لعرض نافذة EndDrawer عند الضغط على صورة الحساب
 class ProfileDrawer extends StatelessWidget {
-  const ProfileDrawer({Key? key}) : super(key: key);
+  final User user;
+  const ProfileDrawer({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +46,11 @@ class ProfileDrawer extends StatelessWidget {
                 children: [
                   // صورة الحساب
                   // استبدل بـ NetworkImage أو AssetImage حسب الحاجة
-                  const CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.grey,
-                    // backgroundImage: NetworkImage(''), // مثال لإضافة الصورة
-                  ),
+                  CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.grey,
+                      backgroundImage: NetworkImage(
+                          '${Config.pocketBaseUrl}/api/files/${user.collectionId}/${user.id}/${user.avatar}')),
                   const SizedBox(height: 30),
                   // اسم المستخدم
                   const Text(
@@ -59,21 +62,20 @@ class ProfileDrawer extends StatelessWidget {
                     ),
                   ),
                   // البريد الإلكتروني
-                  const Text(
-                    'user@example.com',
+                  Text(
+                    user.name,
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
                     ),
                   ),
-                  // الخطة (مثال: Basic)
-                  const Text(
-                    'Basic',
+                  Text(
+                    user.email,
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
