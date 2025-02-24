@@ -4,25 +4,28 @@ part of 'auth_bloc.dart';
 ///
 /// This is an abstract class that extends [Equatable] to allow for value comparison.
 abstract class AuthState extends Equatable {
-  const AuthState();
+  final User? user;
+  const AuthState({required this.user});
 
   @override
   List<Object?> get props => [];
 }
 
 /// Initial state of authentication.
-class AuthInitial extends AuthState {}
+class AuthInitial extends AuthState {
+  const AuthInitial() : super(user: null);
+}
 
 /// State emitted when authentication is in progress.
-class AuthLoading extends AuthState {}
+class AuthLoading extends AuthState {
+  const AuthLoading() : super(user: null);
+}
 
 /// State emitted when authentication is successful.
 ///
 /// Contains the authenticated [user].
 class AuthSuccess extends AuthState {
-  final User user;
-
-  const AuthSuccess({required this.user});
+  const AuthSuccess({required User user}) : super(user: user);
 
   @override
   List<Object?> get props => [user];
@@ -34,7 +37,7 @@ class AuthSuccess extends AuthState {
 class AuthFailure extends AuthState {
   final String error;
 
-  const AuthFailure({required this.error});
+  const AuthFailure({required this.error, super.user});
 
   @override
   List<Object?> get props => [error];
@@ -43,7 +46,7 @@ class AuthFailure extends AuthState {
 class AuthVerifySent extends AuthState {
   final String email;
 
-  const AuthVerifySent({required this.email});
+  const AuthVerifySent({required this.email, super.user});
 
   @override
   List<Object?> get props => [email];
@@ -52,7 +55,7 @@ class AuthVerifySent extends AuthState {
 class AuthEmailVerified extends AuthState {
   final String email;
 
-  const AuthEmailVerified({required this.email});
+  const AuthEmailVerified({required this.email, super.user});
 
   @override
   List<Object?> get props => [email];
@@ -62,7 +65,8 @@ class AuthEmailNotVerified extends AuthState {
   final String email;
   final String error;
 
-  const AuthEmailNotVerified({required this.email, required this.error});
+  const AuthEmailNotVerified(
+      {required this.email, required this.error, super.user});
 
   @override
   List<Object?> get props => [email];
@@ -72,21 +76,21 @@ class AuthEmailNotVerified extends AuthState {
 ///
 /// Contains the authenticated [user].
 class AuthSessionActive extends AuthState {
-  final User user;
-
-  const AuthSessionActive({required this.user});
+  const AuthSessionActive({super.user});
 
   @override
   List<Object?> get props => [user];
 }
 
 /// State emitted when no active session is found.
-class AuthSessionEmpty extends AuthState {}
+class AuthSessionEmpty extends AuthState {
+  const AuthSessionEmpty({super.user});
+}
 
 class AuthPasswordResetSent extends AuthState {
   final String email;
 
-  const AuthPasswordResetSent({required this.email});
+  const AuthPasswordResetSent({required this.email, super.user});
 
   @override
   List<Object?> get props => [email];
@@ -96,7 +100,7 @@ class AuthPasswordResetFailed extends AuthState {
   final String email;
   final String error;
 
-  const AuthPasswordResetFailed({required this.email, required this.error});
+  const AuthPasswordResetFailed({required this.email, required this.error, super.user});
 
   @override
   List<Object?> get props => [email, error];

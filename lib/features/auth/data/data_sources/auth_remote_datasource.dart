@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:pocketbase/pocketbase.dart';
 import 'package:task_app/features/auth/data/models/user_model.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 /// An abstract class that defines the contract for remote authentication data source.
 abstract class AuthRemoteDataSource {
@@ -15,7 +19,12 @@ abstract class AuthRemoteDataSource {
   /// Throws an [Exception] if the registration fails.
   ///
   Future<UserModel> register(
-      String email, String password, String confirmPassword, String name);
+    String email,
+    String password,
+    String confirmPassword,
+    String name,
+    Uint8List avatarImage,
+  );
 
   /// Logs out the current user.
   /// Throws an [Exception] if the logout fails.
@@ -25,22 +34,22 @@ abstract class AuthRemoteDataSource {
   /// Throws an [Exception] if the email fails to send.
   Future<void> sendVerificationEmail(String email);
 
-  /// Checks if the user is verified.
-  ///
-  /// This method takes a [userId] and a [callBack] function. The [callBack] function
-  /// will be executed once the verification status is determined.
-  ///
-  /// - Parameters:
-  ///   - userId: The ID of the user to check verification status for.
-  ///   - callBack: A function to be called with the verification status.
-  ///
-  /// - Returns: A [Future] that completes when the verification check is done.
-  Future<void> onUserVerfied(String userId, Function callBack);
-
   /// Refreshes the user's authentication token.
   /// Throws an [Exception] if the token refresh fails.
   /// Returns a [Future] that completes when the token is refreshed.
   Future<void> refreshAuthToken();
+
+  /// Subscribes to user updates.
+  ///
+  /// This method takes a [userId] and a [callBack] function. The [callBack] function
+  /// will be executed with the updated user data.
+  ///
+  /// - Parameters:
+  ///   - userId: The ID of the user to subscribe to updates for.
+  ///   - callBack: A function to be called with the updated user data.
+  ///
+  /// - Returns: A [Future] that completes when the subscription is done.
+  Future<void> onUserUpdates(String userId, Function callBack);
 
   /// Reset the user's password.
   ///
@@ -80,8 +89,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> register(String email, String password,
-      String confirmPassword, String name) async {
+  Future<UserModel> register(
+    String email,
+    String password,
+    String confirmPassword,
+    String name,
+    Uint8List avatarImage,
+  ) async {
     try {
       final body = <String, dynamic>{
         "password": password,
@@ -91,10 +105,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         "name": name,
       };
 
-      final authResponse =
-          await pocketBase.collection('users').create(body: body);
+      final authResponse = await pocketBase.collection('users').create(
+        body: body,
+        files: [
+          if (avatarImage.isNotEmpty && avatarImage.length > 1)
+            http.MultipartFile.fromBytes(
+              'avatar',
+              avatarImage,
+              filename: 'avatar.jpg', // Provide a valid filename
+              contentType: MediaType(
+                  'image', 'jpeg'), // Optionally specify the content type
+            ),
+        ],
+      );
       return UserModel.fromJson(authResponse.toJson());
     } catch (e) {
+      print(e.toString());
       throw Exception("failed: $e");
     }
   }
@@ -111,22 +137,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> onUserVerfied(String userId, Function callBack) async {
+  Future<void> onUserUpdates(String userId, Function callBack) async {
     await pocketBase.collection('users').subscribe(userId, (e) {
-      var map = {
-        'verified': 'false',
-        if (e.record != null) ...e.record!.toJson(),
-      };
-      print('map: $map');
-      if (map['verified'] as bool == true) {
-        print('callback');
-        callBack();
-      }
+      callBack(UserModel.fromJson(e.record!.toJson()));
     });
   }
 
   @override
   Future<void> refreshAuthToken() async {
+    print("refreshing token");
     await pocketBase.collection('users').authRefresh();
   }
 
