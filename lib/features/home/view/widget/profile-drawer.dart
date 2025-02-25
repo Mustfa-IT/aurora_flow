@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_app/core/config/config.dart';
 import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
+import 'package:task_app/features/home/view/widget/account-page.dart';
 import 'package:task_app/features/home/view/widget/hoverIcon-button.dart';
 
 // // كلاس منفصل لعرض نافذة EndDrawer عند الضغط على صورة الحساب
@@ -54,7 +55,7 @@ class ProfileDrawer extends StatelessWidget {
                   const SizedBox(height: 30),
                   // اسم المستخدم
                   const Text(
-                    'اسم المستخدم',
+                    'User Name',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -94,6 +95,11 @@ class ProfileDrawer extends StatelessWidget {
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
                         // نفّذ الإجراء المطلوب هنا
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AccountEditPage()),
+                        );
                       },
                       hoverColor: Colors.white24,
                     ),
