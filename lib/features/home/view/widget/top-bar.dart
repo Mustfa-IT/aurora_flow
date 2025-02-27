@@ -60,9 +60,9 @@ class TopBar extends StatelessWidget {
               SizedBox(width: 20),
               _verticalDivider(),
               HoverIconButton(
-                tooltip: 'Help',
+                tooltip: 'My Task',
                 onPressed: () {},
-                child: Icon(Icons.help_outline, color: AppDesign.primaryText, size: 30),
+                child: Icon(Icons.check_circle, color: AppDesign.primaryText, size: 30),
               ),
               SizedBox(width: 20),
               _verticalDivider(),

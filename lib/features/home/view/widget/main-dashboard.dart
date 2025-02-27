@@ -18,37 +18,65 @@ class MainDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // نجعل الخلفية شفافة حتى يظهر تدرج القسم الأيمن
-      color: Colors.transparent,
-      padding: AppDesign.mainPadding,
-      alignment: Alignment.bottomLeft,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // نص الترحيب بخط عريض ولون أبيض
-          Text(
-            '$greeting, $userName',
-            style: TextStyle(
-              fontSize: 24,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+    final ScrollController scrollController = ScrollController();
+    return Scrollbar(
+      controller: scrollController,
+      thumbVisibility: true, // لإظهار مؤشر التمرير دائمًا
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal, // التمرير الأفقي
+        controller: scrollController,
+        child: Container(
+          // نحدد عرضًا أكبر من عرض الشاشة لظهور التمرير
+          width: MediaQuery.of(context).size.width + 450,
+          // نجعل الخلفية شفافة حتى يظهر تدرج القسم الأيمن
+          color: Colors.transparent,
+          padding: AppDesign.mainPadding,
+          alignment: Alignment.bottomLeft,
+          child: Row(
+            children: [
+              // الحاوية التي تحتوي على النصوص
+              Container(
+                width: 350, // عرض ثابت للحاوية بحيث لا تتجاوز النصوص هذا العرض
+                color: Colors.transparent,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 200),
+                    // نص الترحيب بخط عريض ولون أبيض
+                    Text(
+                      '$greeting, $userName',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      softWrap: true,
+                    ),
+                    SizedBox(height: 8),
+                    // عرض الوقت بخط كبير ولون أبيض مع تقليص الحجم إذا دعت الحاجة
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        timeString,
+                        style: TextStyle(
+                          fontSize: 90,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        softWrap: true,
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    // قسم الاقتباس التحفيزي منسق داخل الحاوية الشفافة
+                    _buildInspirationalQuote(),
+                  ],
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 8),
-          // عرض الوقت بخط كبير ولون أبيض
-          Text(
-            timeString,
-            style: TextStyle(
-              fontSize: 90,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(height: 24),
-          _buildInspirationalQuote(),
-        ],
+        ),
       ),
     );
   }
@@ -66,12 +94,12 @@ class MainDashboard extends StatelessWidget {
         children: [
           TextSpan(
               text:
-                  '"I am learning every day to allow the space between where I am\n'),
+                  '"I am learning every day to allow the space between where I am'),
           TextSpan(
               text:
-                  'and where I want to be to inspire me and not terrify me."\n\n'),
+                  'and where I want to be to inspire me and not terrify me."\n'),
           TextSpan(
-            text: 'Lets go',
+            text: 'Let’s go',
             style: TextStyle(fontStyle: FontStyle.normal),
           ),
         ],
