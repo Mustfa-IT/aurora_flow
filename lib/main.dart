@@ -18,7 +18,7 @@ void main() async {
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     await windowManager.setTitle('Flutter Window');
-    await windowManager.setMinimumSize(const Size(1100, 700));
+    await windowManager.setMinimumSize(const Size(1100, 750));
   }
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   await setupLocator(sharedPreferences); // dependency injection setup
