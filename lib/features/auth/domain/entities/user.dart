@@ -1,3 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 /// A class representing a user entity.
 ///
 /// The [User] class contains the user's unique identifier and email address.
@@ -17,6 +20,7 @@
 class User {
   /// The unique identifier of the user.
   final String id;
+
   /// The email address of the user.
   final String email;
   final String name;
@@ -43,4 +47,38 @@ class User {
     required this.created,
     required this.updated,
   });
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'email': email,
+      'name': name,
+      'collectionId': collectionId,
+      'collectionName': collectionName,
+      'emailVisibility': emailVisibility,
+      'verified': verified,
+      'avatar': avatar,
+      'created': created.toString(),
+      'updated': updated.toString(),
+    };
+  }
+
+  factory User.fromMap(Map<String, dynamic> map) {
+    return User(
+      id: map['id'] as String,
+      email: map['email'] as String,
+      name: map['name'] as String,
+      collectionId: map['collectionId'] as String,
+      collectionName: map['collectionName'] as String,
+      emailVisibility: map['emailVisibility'] as bool,
+      verified: map['verified'] as bool,
+      avatar: map['avatar'] as String,
+      created: DateTime.parse(map['created']),
+      updated: DateTime.parse(map['updated']),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory User.fromJson(Map<String, dynamic> source) => User.fromMap(source);
 }

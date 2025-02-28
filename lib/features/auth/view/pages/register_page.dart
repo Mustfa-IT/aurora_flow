@@ -219,7 +219,7 @@ class _RegisterPageState extends State<RegisterPage> {
           AuthRegisterRequested(
             email: email,
             password: password,
-            confirmPassowrd: confirmPassword,
+            confirmPassword: confirmPassword,
             name: name,
             avatarImage: _avatarImage,
           ),

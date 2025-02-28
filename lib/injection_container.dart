@@ -86,7 +86,7 @@ Future<void> setupLocator(SharedPreferences sharedPreferences) async {
         login: sl<Login>(),
         pocketBase: sl<PocketBase>(),
         register: sl<Register>(),
-        verifyEmail: sl<SendVerificationEmail>(),
+        sendVerificationEmail: sl<SendVerificationEmail>(),
         onUserUpdates: sl<OnUserUpdates>(),
         refreshToken: sl<RefreshToken>(),
         resetPassword: sl<ResetPassword>(),
