@@ -77,9 +77,6 @@ class _HomePageState extends State<HomePage> {
         if (state is! AuthSessionActive) {
           Navigator.of(context).pushReplacementNamed('/login');
         }
-        if (_user == null) {
-          _showDialog(context);
-        }
         _user = state.user;
         print(state.user!.name);
       },
@@ -158,23 +155,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('User Not Found'),
-          content: Text('User not found. Please login again.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacementNamed('/login');
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }

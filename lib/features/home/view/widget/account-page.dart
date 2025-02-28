@@ -40,10 +40,10 @@ class _AccountEditPageState extends State<AccountEditPage>
     // تهيئة متحكم الرسوم المتحركة للبطاقة اليسرى (Edit Account)
     _leftCardController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1500),
     );
     _leftCardAnimation =
-        Tween<Offset>(begin: const Offset(-1.0, 0), end: Offset.zero)
+        Tween<Offset>(begin: const Offset(-1.0, -2), end: Offset.zero)
             .animate(CurvedAnimation(
       parent: _leftCardController,
       curve: Curves.easeOut,
@@ -51,10 +51,10 @@ class _AccountEditPageState extends State<AccountEditPage>
     // تهيئة متحكم الرسوم المتحركة للبطاقة اليمنى (My Account)
     _rightCardController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1500),
     );
     _rightCardAnimation =
-        Tween<Offset>(begin: const Offset(1.0, 0), end: Offset.zero)
+        Tween<Offset>(begin: const Offset(1.0, 2), end: Offset.zero)
             .animate(CurvedAnimation(
       parent: _rightCardController,
       curve: Curves.easeOut,
@@ -79,7 +79,7 @@ class _AccountEditPageState extends State<AccountEditPage>
   }
 
   /// دالة بدء العد التنازلي لمدة 60 ثانية وتعطيل زر تغيير كلمة المرور مؤقتاً.
-  /// ملاحظة للمبرمج الخلفي: 
+  /// ملاحظة للمبرمج الخلفي:
   /// هنا يمكن ربط وظيفة إرسال معلومات البريد الإلكتروني عبر استدعاء API من الـ backend.
   void startCountdown() {
     if (countdown > 0) return;
@@ -97,27 +97,6 @@ class _AccountEditPageState extends State<AccountEditPage>
         });
       }
     });
-    // عرض رسالة تأكيد إرسال المعلومات عبر بريد إلكتروني
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Information Sent'),
-          content: const Text(
-            "The information has been sent to your email, please check it.",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   /// دالة عرض خيارات الصورة عند الضغط على أيقونة التعديل.
@@ -145,6 +124,7 @@ class _AccountEditPageState extends State<AccountEditPage>
           value: 'delete',
           child: InkWell(
             onTap: () {
+              //backend مطلوب 
               // عند النقر على زر حذف الصورة، يتم إغلاق القائمة مع القيمة 'delete'
               Navigator.pop(context, 'delete');
             },
@@ -162,6 +142,7 @@ class _AccountEditPageState extends State<AccountEditPage>
           value: 'update',
           child: InkWell(
             onTap: () {
+              //backend مطلوب 
               // عند النقر على زر تحديث الصورة، يتم إغلاق القائمة مع القيمة 'update'
               Navigator.pop(context, 'update');
             },
@@ -331,7 +312,7 @@ class _AccountEditPageState extends State<AccountEditPage>
             alignment: Alignment.bottomRight,
             children: [
               Hero(
-                tag: 'avatar',
+                tag: 'a',
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -402,7 +383,6 @@ class _AccountEditPageState extends State<AccountEditPage>
               ),
             ),
           ),
-
           const SizedBox(height: 24),
           // قسم البريد الإلكتروني يظهر بسلاسة مع AnimatedSwitcher
           AnimatedSwitcher(
@@ -414,58 +394,55 @@ class _AccountEditPageState extends State<AccountEditPage>
                 ? Column(
                     key: const ValueKey("emailField"),
                     children: [
-                      TextField(
-                        controller: _emailController,
-                        style: const TextStyle(color: Colors.indigo),
-                        decoration: InputDecoration(
-                          labelText: "Enter Email Address",
-                          labelStyle: const TextStyle(
-                              color: Colors.indigo,
-                              fontWeight: FontWeight.w600),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 14),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: const Text(
+                          "The information has been sent to your email, please check it.",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.indigo,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: Colors.indigo, width: 2),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          suffixIcon: HoverIconButton(
-                            tooltip: 'Cancel',
-                            onPressed: () {
-                              setState(() {
-                                _showEmailField = false;
-                              });
-                            },
-                            child: const Icon(Icons.cancel_sharp,
-                                color: Colors.red),
-                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                       const SizedBox(height: 12),
                       ElevatedButton(
                         onPressed: () {
-                          // عند الضغط على زر "Send" يتم إخفاء حقل البريد وبدء العد التنازلي
-                          // ملاحظة للمبرمج الخلفي: هنا يجب استدعاء دالة API لإرسال رمز التأكيد أو تعليمات تغيير كلمة المرور إلى البريد الإلكتروني
+                          // عند الضغط على زر "OK" يتم إخفاء حقل البريد وبدء العد التنازلي
                           setState(() {
                             _showEmailField = false;
                           });
                           startCountdown();
                         },
                         style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
+                          backgroundColor:
+                              Colors.transparent, // خلفية الزر شفافة
+                          shadowColor: Colors.blue, // لا توجد ظل
+                          shape: const CircleBorder(), // شكل دائري فقط
+                        ),
+                        child: CircleAvatar(
                           backgroundColor: Colors.indigo,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 24),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                          radius: 24, // يمكنك تعديل الحجم حسب الحاجة
+                          child: const Text(
+                            "OK",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        child: const Text("Send"),
                       ),
                     ],
                   )
@@ -493,7 +470,10 @@ class _AccountEditPageState extends State<AccountEditPage>
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             child: countdown > 0
-                ? Text("Please wait $countdown sec", style: TextStyle(color: Colors.red),)
+                ? Text(
+                    "Please wait $countdown sec",
+                    style: TextStyle(color: Colors.red),
+                  )
                 : const Text("Update Password"),
           ),
         ],
