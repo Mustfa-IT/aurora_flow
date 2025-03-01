@@ -49,6 +49,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> sendVerificationEmail(String email) async {
     return await remoteDataSource.sendVerificationEmail(email);
   }
+
   @override
   Future<void> refreshAuthToken() {
     return remoteDataSource.refreshAuthToken();
@@ -58,9 +59,19 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> resetPassword(String email) {
     return remoteDataSource.resetPassword(email);
   }
-  
+
   @override
   Future<void> onUserUpdates(String userId, Function callBack) {
     return remoteDataSource.onUserUpdates(userId, callBack);
+  }
+
+  @override
+  Future<User> updateUsername(String name, String userId) {
+    return remoteDataSource.updateUsername(name, userId);
+  }
+  
+  @override
+  Future<User> updateAvatar(Uint8List image) {
+    return remoteDataSource.updateAvatar(image);
   }
 }

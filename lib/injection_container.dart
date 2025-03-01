@@ -31,6 +31,8 @@ import 'package:task_app/features/auth/domain/usecases/refresh_token.dart';
 import 'package:task_app/features/auth/domain/usecases/register.dart';
 import 'package:task_app/features/auth/domain/usecases/reset_password.dart';
 import 'package:task_app/features/auth/domain/usecases/send_verification_email.dart';
+import 'package:task_app/features/auth/domain/usecases/update_avatar.dart';
+import 'package:task_app/features/auth/domain/usecases/update_username.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:get_it/get_it.dart';
@@ -80,16 +82,22 @@ Future<void> setupLocator(SharedPreferences sharedPreferences) async {
   sl.registerLazySingleton(() => RefreshToken(sl<AuthRepository>()));
   // Register the reset password use case.
   sl.registerLazySingleton(() => ResetPassword(sl<AuthRepository>()));
+  // Register the update username use case.
+  sl.registerLazySingleton(() => UpdateUsername(sl<AuthRepository>()));
+  //  Register the update avatar use case.
+  sl.registerLazySingleton(() => UpdateAvatar(sl<AuthRepository>()));
   // Register the AuthBloc.
   sl.registerFactory<AuthBloc>(
     () => AuthBloc(
         login: sl<Login>(),
         pocketBase: sl<PocketBase>(),
         register: sl<Register>(),
-        verifyEmail: sl<SendVerificationEmail>(),
+        sendVerificationEmail: sl<SendVerificationEmail>(),
         onUserUpdates: sl<OnUserUpdates>(),
         refreshToken: sl<RefreshToken>(),
         resetPassword: sl<ResetPassword>(),
+        updateUsername: sl<UpdateUsername>(),
+        updateAvatar: sl<UpdateAvatar>(),
         logout: sl<Logout>()),
   );
 }

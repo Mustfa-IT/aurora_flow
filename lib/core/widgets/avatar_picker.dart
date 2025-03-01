@@ -4,8 +4,14 @@ import 'package:image_picker/image_picker.dart';
 
 class AvatarPicker extends StatefulWidget {
   final Function(Uint8List?) onImageSelected;
-
-  const AvatarPicker({super.key, required this.onImageSelected});
+  final Uint8List? defaultImage;
+  final Uint8List? fallBackImage;
+  const AvatarPicker({
+    super.key,
+    required this.onImageSelected,
+    this.defaultImage,
+    this.fallBackImage,
+  });
 
   @override
   AvatarPickerState createState() => AvatarPickerState();
@@ -35,8 +41,15 @@ class AvatarPickerState extends State<AvatarPicker> {
         CircleAvatar(
           radius: 50,
           backgroundColor: Colors.black.withOpacity(0.1),
-          backgroundImage:
-              _imageBytes != null ? MemoryImage(_imageBytes!) : null,
+          backgroundImage: _imageBytes != null
+              ? MemoryImage(_imageBytes!)
+              : () {
+                  return widget.defaultImage != null
+                      ? MemoryImage(widget.defaultImage!)
+                      : widget.fallBackImage != null
+                          ? MemoryImage(widget.fallBackImage!)
+                          : null;
+                }(),
         ),
         Positioned(
           child: IconButton(

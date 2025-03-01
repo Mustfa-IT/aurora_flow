@@ -56,6 +56,18 @@ abstract class AuthRemoteDataSource {
   /// This method takes a [email] and sends a password reset email to the user.
   ///
   Future<void> resetPassword(String email);
+
+  /// Update the user's username.
+  /// This method takes a [name] and [userId] and updates the user's username.
+  /// Returns a [UserModel] containing user data if the update is successful.
+  /// Throws an [Exception] if the update fails.
+  Future<UserModel> updateUsername(String name, String userId);
+
+  /// Update the user's avatar.
+  /// This method takes a [image] and updates the user's avatar.
+  /// Returns a [UserModel] containing user data if the update is successful.
+  /// Throws an [Exception] if the update fails.
+  Future<UserModel> updateAvatar(Uint8List image);
 }
 
 /// Implementation of [AuthRemoteDataSource] that uses PocketBase for authentication.
@@ -152,5 +164,36 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> resetPassword(String email) async {
     await pocketBase.collection('users').requestPasswordReset(email);
+  }
+
+  @override
+  Future<UserModel> updateUsername(String name, String userId) {
+    final body = <String, dynamic>{
+      "name": name,
+    };
+
+    return pocketBase.collection('users').update(userId, body: body).then(
+          (value) => UserModel.fromJson(
+            value.toJson(),
+          ),
+        );
+  }
+
+  @override
+  Future<UserModel> updateAvatar(Uint8List image) {
+    return pocketBase
+        .collection('users')
+        .update(pocketBase.authStore.record!.id, files: [
+      if (image.isNotEmpty && image.length > 1)
+        http.MultipartFile.fromBytes(
+          'avatar',
+          image,
+          filename: 'avatar.jpg', // Provide a valid filename
+        ),
+    ]).then(
+      (value) => UserModel.fromJson(
+        value.toJson(),
+      ),
+    );
   }
 }

@@ -11,113 +11,192 @@ import 'package:task_app/features/auth/domain/usecases/refresh_token.dart';
 import 'package:task_app/features/auth/domain/usecases/register.dart';
 import 'package:task_app/features/auth/domain/usecases/reset_password.dart';
 import 'package:task_app/features/auth/domain/usecases/send_verification_email.dart';
+import 'package:task_app/features/auth/domain/usecases/update_avatar.dart';
+import 'package:task_app/features/auth/domain/usecases/update_username.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
-/// The `AuthBloc` class is responsible for handling authentication-related events and states.
-/// It extends the `Bloc` class from the `flutter_bloc` package and manages the following events:
-/// - `AuthLoginRequested`: Triggered when a login request is made.
-/// - `AuthCheckSession`: Triggered to check if there is an active session.
-///
-/// The `AuthBloc` class uses the following dependencies:
-/// - `Login`: A use case for handling login logic.
-/// - `PocketBase`: An instance of PocketBase for session management.
-///
-/// The initial state of the `AuthBloc` is `AuthInitial`.
-///
-/// Methods:
-/// - `_onLoginRequested`: Handles the `AuthLoginRequested` event. It attempts to log in the user
-///   with the provided email and password, and emits `AuthLoading`, `AuthSuccess`, or `AuthFailure`
-///   states based on the outcome.
-/// - `_onCheckSession`: Handles the `AuthCheckSession` event. It checks the PocketBase instance
-///   for a valid session and emits `AuthSessionActive` or `AuthSessionEmpty` states based on the
-///   session status.
-///
-/// Usage:
-///
-/// To use the `AuthBloc`, you can dispatch events to it using the `add` method.
-/// ```dart
-///   context.read<AuthBloc>().add(AuthLoginRequested(email: 'user@example.com', password: 'password'));
-/// ```
-///
-/// You can also listen to the state changes in the UI using the `BlocBuilder` widget.
-/// in the UI:
-/// ```dart
-/// BlocBuilder<AuthBloc, AuthState>(
-///   builder: (context, state) {
-///     if (state is AuthLoading) {
-///       return CircularProgressIndicator();
-///     } else if (state is AuthSuccess) {
-///       return Text('Logged in as: ${state.user.email}');
-///     } else if (state is AuthFailure) {
-///       return Text('Login failed: ${state.error}');
-///     } else {
-///       return ElevatedButton(
-///         onPressed: () {
-///           // Dispatch the AuthCheckSession event
-///           context.read<AuthBloc>().add(AuthCheckSession());
-///         },
-///         child: Text('Check Session'),
-///       );
-///     }
-///   },
-/// )
-/// ```
-
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Login login;
   final Register register;
-  final SendVerificationEmail verifyEmail;
+  final SendVerificationEmail sendVerificationEmail;
   final OnUserUpdates onUserUpdates;
   final Logout logout;
   final RefreshToken refreshToken;
   final ResetPassword resetPassword;
+  final UpdateUsername updateUsername;
+  final UpdateAvatar updateAvatar;
   final PocketBase pocketBase;
+
   AuthBloc({
     required this.login,
     required this.register,
-    required this.verifyEmail,
+    required this.sendVerificationEmail,
     required this.onUserUpdates,
     required this.logout,
     required this.refreshToken,
     required this.resetPassword,
+    required this.updateUsername,
+    required this.updateAvatar,
     required this.pocketBase,
-  }) : super(AuthInitial()) {
+  }) : super(const AuthInitial()) {
     on<AuthLoginRequested>(_onLoginRequested);
-    on<AuthUserUpdated>(_onUserUpdated);
-    on<AuthCheckSession>(_onCheckSession);
     on<AuthRegisterRequested>(_onRegisterRequested);
+    on<AuthCheckSession>(_onCheckSession);
     on<AuthRequestVerifyEmail>(_onRequestVerifyEmail);
     on<AuthLogoutRequested>(_onLogoutRequested);
     on<AuthEmailVerifiedCallBack>(_onEmailVerifiedCallBack);
     on<AuthPasswordResetRequested>(_onPasswordResetRequested);
-  }
-  // New handler for updating user info
-  void _onUserUpdated(
-    AuthUserUpdated event,
-    Emitter<AuthState> emit,
-  ) {
-    // Update the state if a session is active
-    if (state is AuthSessionActive) {
-      refreshToken();
-      emit(AuthSessionActive(user: event.updatedUser));
-    }
+    on<AuthUserUpdated>(_onUserUpdated);
+    on<AuthUpdateUsernameRequested>(_onUpdateUsernameRequested);
+    on<AuthUpdateAvatarRequested>(_onUpdateAvatarRequested);
   }
 
-  void _onPasswordResetRequested(
-    AuthPasswordResetRequested event,
+  Future<void> _onUpdateAvatarRequested(
+    AuthUpdateAvatarRequested event,
     Emitter<AuthState> emit,
   ) async {
     try {
-      final response = await resetPassword(event.email);
-      response.fold((l) {
-        emit(AuthPasswordResetFailed(email: event.email, error: l.message));
-      }, (r) {
-        emit(AuthPasswordResetSent(email: event.email));
-      });
+      print('Updating avatar');
+      final result = await updateAvatar(event.image);
+      result.fold(
+        (failure) => emit(AuthFailure(error: failure.message)),
+        (user) => emit(AuthSessionActive(user: user)),
+      );
     } catch (e) {
-      emit(AuthPasswordResetFailed(email: event.email, error: e.toString()));
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateUsernameRequested(
+    AuthUpdateUsernameRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      final result = await updateUsername(event.name, state.user!.id);
+      print(result);
+      result.fold(
+        (failure) {
+          print(failure.message);
+          emit(AuthFailure(error: failure.message));
+        },
+        (user) {
+          print(user.name);
+          emit(AuthSessionActive(user: user));
+        },
+      );
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onLoginRequested(
+    AuthLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    try {
+      final result = await login(event.email, event.password);
+      result.fold(
+        (failure) => emit(AuthFailure(error: failure.message)),
+        (user) => emit(AuthSuccess(user: user)),
+      );
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onRegisterRequested(
+    AuthRegisterRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    try {
+      final result = await register(
+        event.email,
+        event.password,
+        event.confirmPassword,
+        event.name,
+        event.avatarImage,
+      );
+      result.fold(
+        (failure) => emit(AuthFailure(error: failure.message)),
+        (user) => emit(AuthSuccess(user: user)),
+      );
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onCheckSession(
+    AuthCheckSession event,
+    Emitter<AuthState> emit,
+  ) async {
+    if (pocketBase.authStore.isValid) {
+      final result = await refreshToken();
+      result.fold(
+        (failure) => emit(const AuthSessionEmpty()),
+        (_) async => await _checkAuthStore(emit),
+      );
+    } else {
+      emit(const AuthSessionEmpty());
+    }
+  }
+
+  Future<void> _checkAuthStore(Emitter<AuthState> emit) async {
+    final record = pocketBase.authStore.record;
+    if (record != null && pocketBase.authStore.isValid) {
+      try {
+        final user = User.fromJson(record.toJson());
+        emit(AuthSessionActive(user: user));
+
+        // Listen for updates on the user.
+        await onUserUpdates(user.id, (updatedUser) {
+          if (updatedUser is User) {
+            add(AuthUserUpdated(updatedUser: updatedUser));
+          }
+        });
+      } catch (e) {
+        emit(const AuthSessionEmpty());
+      }
+    }
+  }
+
+  Future<void> _onRequestVerifyEmail(
+    AuthRequestVerifyEmail event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    try {
+      final result = await sendVerificationEmail(event.email);
+      result.fold(
+        (failure) => emit(
+          AuthEmailNotVerified(email: event.email, error: failure.message),
+        ),
+        (_) async {
+          emit(AuthVerifySent(email: event.email));
+          // Listen for email verification updates.
+          await onUserUpdates(event.userId, (user) {
+            if (state.user != null) {
+              return;
+            }
+            if (user is User) {
+              if (user.verified == true) {
+                print('Email verified');
+                add(AuthEmailVerifiedCallBack(email: user.email));
+              } else {
+                emit(AuthEmailNotVerified(
+                  email: user.email,
+                  error: 'Email not verified',
+                ));
+              }
+            }
+          });
+        },
+      );
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
     }
   }
 
@@ -132,134 +211,38 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLogoutRequested event,
     Emitter<AuthState> emit,
   ) {
-    var res = logout();
-    res.fold((l) {
-      emit(AuthFailure(error: l.message));
-    }, (r) {
-      emit(AuthInitial());
-    });
+    final result = logout();
+    result.fold(
+      (failure) => emit(AuthFailure(error: failure.message)),
+      (_) => emit(const AuthInitial()),
+    );
   }
 
-  Future<void> _onRequestVerifyEmail(
-    AuthRequestVerifyEmail event,
+  Future<void> _onPasswordResetRequested(
+    AuthPasswordResetRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
     try {
-      final response = await verifyEmail(event.email);
-      response.fold((l) {
-        emit(AuthEmailNotVerified(email: event.email, error: l.message));
-      }, (r) async {
-        emit(AuthVerifySent(email: event.email));
-        print("user id: ${event.userId}");
-        // Use the OnUserUpdate use case to handle user verification callback
-        await onUserUpdates(event.userId, (user) {
-          if (user is! User) {
-            return;
-          }
-          if (state.user?.verified == true && state.user!.verified == true)
-            return;
-          if (user.verified == true) {
-            add(AuthEmailVerifiedCallBack(email: user.email));
-          } else {
-            emit(AuthEmailNotVerified(
-                email: user.email, error: 'Email not verified'));
-          }
-        });
-      });
-    } catch (e) {
-      emit(AuthFailure(error: e.toString()));
-    }
-  }
-
-  Future<void> _onRegisterRequested(
-    AuthRegisterRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
-    try {
-      final respone = await register(
-        event.email,
-        event.password,
-        event.confirmPassowrd,
-        event.name,
-        event.avatarImage,
+      final result = await resetPassword(event.email);
+      result.fold(
+        (failure) => emit(
+          AuthPasswordResetFailed(email: event.email, error: failure.message),
+        ),
+        (_) => emit(AuthPasswordResetSent(email: event.email)),
       );
-      respone.fold((l) {
-        emit(AuthFailure(error: l.message));
-      }, (r) {
-        emit(AuthSuccess(user: r));
-      });
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      emit(AuthPasswordResetFailed(email: event.email, error: e.toString()));
     }
   }
 
-  Future<void> _onLoginRequested(
-    AuthLoginRequested event,
+  void _onUserUpdated(
+    AuthUserUpdated event,
     Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
-    try {
-      final reponse = await login(event.email, event.password);
-      reponse.fold((l) {
-        emit(AuthFailure(error: l.message));
-      }, (r) {
-        emit(AuthSuccess(user: r));
-      });
-    } catch (e) {
-      emit(AuthFailure(error: e.toString()));
-    }
-  }
-
-  Future<void> _onCheckSession(
-    AuthCheckSession event,
-    Emitter<AuthState> emit,
-  ) async {
-    if (pocketBase.authStore.isValid) {
-      final response = await refreshToken();
-      response.fold(
-        (l) {
-          print(l.message);
-          emit(AuthSessionEmpty());
-        },
-        (r) => checkAuthStore(emit),
-      );
-    } else {
-      emit(AuthSessionEmpty());
-    }
-  }
-
-  Future<void> checkAuthStore(Emitter<AuthState> emit) async {
-    if (pocketBase.authStore.record != null && pocketBase.authStore.isValid) {
-      final map = pocketBase.authStore.record!.toJson();
-      try {
-        final user = User(
-          id: map['id'] as String,
-          email: map['email'] as String,
-          name: map['name'] as String,
-          collectionId: map['collectionId'] as String,
-          collectionName: map['collectionName'] as String,
-          emailVisibility: map['emailVisibility'] as bool,
-          verified: map['verified'] as bool,
-          avatar: map['avatar'] as String,
-          created: DateTime.parse(map['created']),
-          updated: DateTime.parse(map['updated']),
-        );
-
-        // Emit active session state
-        emit(AuthSessionActive(user: user));
-
-        // Subscribe to user updates
-        await onUserUpdates(user.id, (updatedUser) {
-          if (updatedUser is User) {
-            // Dispatch an event to update user info
-            add(AuthUserUpdated(updatedUser: updatedUser));
-          }
-        });
-      } catch (e) {
-        emit(AuthSessionEmpty());
-      }
+  ) {
+    if (state is AuthSessionActive) {
+      // Optionally refresh token in the background.
+      refreshToken();
+      emit(AuthSessionActive(user: event.updatedUser));
     }
   }
 }

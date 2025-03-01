@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:task_app/core/common/app-design.dart';
 import 'package:task_app/core/config/config.dart';
 import 'package:task_app/features/auth/domain/entities/user.dart';
-import 'package:task_app/features/home/view/widget/hoverIcon-button.dart';
+import 'package:task_app/features/home/view/widget/hoverIcon_button.dart';
 
 
 // =============================================
@@ -60,9 +60,9 @@ class TopBar extends StatelessWidget {
               SizedBox(width: 20),
               _verticalDivider(),
               HoverIconButton(
-                tooltip: 'Help',
+                tooltip: 'My Task',
                 onPressed: () {},
-                child: Icon(Icons.help_outline, color: AppDesign.primaryText, size: 30),
+                child: Icon(Icons.check_circle, color: AppDesign.primaryText, size: 30),
               ),
               SizedBox(width: 20),
               _verticalDivider(),
