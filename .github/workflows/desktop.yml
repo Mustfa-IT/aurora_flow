@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Create Flutter Directory
         run: |
-          if not exist "C:\Users\runneradmin\flutter" mkdir "C:\Users\runneradmin\flutter"
+          if (!(Test-Path "C:\Users\runneradmin\flutter")) {New-Item -ItemType Directory -Path "C:\Users\runneradmin\flutter"}
       - name: Cache Flutter SDK
         uses: actions/cache@v4
         with:
@@ -31,7 +31,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.27.4'
+          flutter-version: "3.27.4"
 
       - name: Enable Windows Support
         run: flutter config --enable-windows-desktop
