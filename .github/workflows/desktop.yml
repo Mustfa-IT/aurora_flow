@@ -16,7 +16,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
+      - name: Create Flutter Directory
+        run: |
+          if not exist "C:\Users\runneradmin\flutter" mkdir "C:\Users\runneradmin\flutter"
       - name: Cache Flutter SDK
         uses: actions/cache@v4
         with:
