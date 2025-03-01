@@ -33,4 +33,10 @@ abstract class AuthRepository {
 
   /// Subscribes to user updates.
   Future<void> onUserUpdates(String userId, Function callBack);
+
+  /// Update the user's username.
+  Future<User> updateUsername(String name, String userId);
+
+  /// Update the user's avatar.
+  Future<User> updateAvatar(Uint8List image);
 }

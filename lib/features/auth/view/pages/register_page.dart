@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:task_app/core/utils/utils.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
-import 'package:task_app/features/auth/view/widgets/avatar_picker.dart';
+import 'package:task_app/core/widgets/avatar_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -22,7 +23,25 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscureConfirmPassword = true;
   String? _passwordError;
   Uint8List? _avatarImage;
+  Uint8List? fallBackAvatar;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadDefaultAvatar();
+  }
+
+  Future<void> _loadDefaultAvatar() async {
+    try {
+      final bytes = await fetchNetworkImageBytes('https://www.w3schools.com/howto/img_avatar.png');
+      setState(() {
+        fallBackAvatar = bytes;
+      });
+    } catch (e) {
+      // Handle error (optional)
+      debugPrint(e.toString());
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -83,6 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         const SizedBox(height: 30),
                         AvatarPicker(
+                          fallBackImage: fallBackAvatar,
                           onImageSelected: (image) {
                             setState(() {
                               _avatarImage = image;
@@ -221,7 +241,7 @@ class _RegisterPageState extends State<RegisterPage> {
             password: password,
             confirmPassword: confirmPassword,
             name: name,
-            avatarImage: _avatarImage,
+            avatarImage: _avatarImage?? fallBackAvatar,
           ),
         );
   }

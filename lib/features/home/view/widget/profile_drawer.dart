@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_app/core/config/config.dart';
 import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
-import 'package:task_app/features/home/view/widget/account-page.dart';
-import 'package:task_app/features/home/view/widget/hoverIcon-button.dart';
+import 'package:task_app/features/home/view/pages/account_page.dart';
+import 'package:task_app/features/home/view/widget/hoverIcon_button.dart';
 
 // // كلاس منفصل لعرض نافذة EndDrawer عند الضغط على صورة الحساب
 class ProfileDrawer extends StatelessWidget {
@@ -98,7 +98,7 @@ class ProfileDrawer extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const AccountEditPage()),
+                              builder: (context) => const EditAccountPage()),
                         );
                       },
                       hoverColor: Colors.white24,

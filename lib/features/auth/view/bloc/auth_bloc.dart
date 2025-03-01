@@ -11,6 +11,8 @@ import 'package:task_app/features/auth/domain/usecases/refresh_token.dart';
 import 'package:task_app/features/auth/domain/usecases/register.dart';
 import 'package:task_app/features/auth/domain/usecases/reset_password.dart';
 import 'package:task_app/features/auth/domain/usecases/send_verification_email.dart';
+import 'package:task_app/features/auth/domain/usecases/update_avatar.dart';
+import 'package:task_app/features/auth/domain/usecases/update_username.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -23,6 +25,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Logout logout;
   final RefreshToken refreshToken;
   final ResetPassword resetPassword;
+  final UpdateUsername updateUsername;
+  final UpdateAvatar updateAvatar;
   final PocketBase pocketBase;
 
   AuthBloc({
@@ -33,6 +37,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.logout,
     required this.refreshToken,
     required this.resetPassword,
+    required this.updateUsername,
+    required this.updateAvatar,
     required this.pocketBase,
   }) : super(const AuthInitial()) {
     on<AuthLoginRequested>(_onLoginRequested);
@@ -43,6 +49,46 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEmailVerifiedCallBack>(_onEmailVerifiedCallBack);
     on<AuthPasswordResetRequested>(_onPasswordResetRequested);
     on<AuthUserUpdated>(_onUserUpdated);
+    on<AuthUpdateUsernameRequested>(_onUpdateUsernameRequested);
+    on<AuthUpdateAvatarRequested>(_onUpdateAvatarRequested);
+  }
+
+  Future<void> _onUpdateAvatarRequested(
+    AuthUpdateAvatarRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      print('Updating avatar');
+      final result = await updateAvatar(event.image);
+      result.fold(
+        (failure) => emit(AuthFailure(error: failure.message)),
+        (user) => emit(AuthSessionActive(user: user)),
+      );
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateUsernameRequested(
+    AuthUpdateUsernameRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      final result = await updateUsername(event.name, state.user!.id);
+      print(result);
+      result.fold(
+        (failure) {
+          print(failure.message);
+          emit(AuthFailure(error: failure.message));
+        },
+        (user) {
+          print(user.name);
+          emit(AuthSessionActive(user: user));
+        },
+      );
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
   }
 
   Future<void> _onLoginRequested(
@@ -132,11 +178,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthVerifySent(email: event.email));
           // Listen for email verification updates.
           await onUserUpdates(event.userId, (user) {
+            if (state.user != null) {
+              return;
+            }
             if (user is User) {
-              if (state.user == null) {
-                return;
-              }
-              if (user.verified && !state.user!.verified) {
+              if (user.verified == true) {
+                print('Email verified');
                 add(AuthEmailVerifiedCallBack(email: user.email));
               } else {
                 emit(AuthEmailNotVerified(
