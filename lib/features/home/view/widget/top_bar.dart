@@ -3,6 +3,7 @@ import 'package:task_app/core/common/app-design.dart';
 import 'package:task_app/core/config/config.dart';
 import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/home/view/widget/hoverIcon_button.dart';
+import 'package:task_app/features/home/view/widget/vertical-divider.dart';
 
 
 // =============================================
@@ -31,41 +32,38 @@ class TopBar extends StatelessWidget {
           // صف الأيقونات مع HoverIconButton لكل منها
           Row(
             children: [
-              HoverIconButton(
-                tooltip: 'Timer',
-                onPressed: () {},
-                child: Icon(Icons.timer, color: AppDesign.primaryText, size: 30),
-              ),
               SizedBox(width: 20),
-              _verticalDivider(),
               HoverIconButton(
                 tooltip: 'Group',
                 onPressed: () {},
                 child: Icon(Icons.group, color: AppDesign.primaryText, size: 30),
               ),
               SizedBox(width: 20),
-              _verticalDivider(),
+              VerticalDividerWidget(),
+              HoverIconButton(
+                tooltip: 'Timer',
+                onPressed: () {},
+                child: Icon(Icons.timer, color: AppDesign.primaryText, size: 30),
+              ), SizedBox(width: 20),
               HoverIconButton(
                 tooltip: 'Add',
                 onPressed: () {},
                 child: Icon(Icons.add, color: AppDesign.primaryText, size: 30),
               ),
               SizedBox(width: 20),
-              _verticalDivider(),
               HoverIconButton(
                 tooltip: 'Notifications',
                 onPressed: () {},
                 child: Icon(Icons.notifications_active, color: AppDesign.primaryText, size: 30),
               ),
               SizedBox(width: 20),
-              _verticalDivider(),
               HoverIconButton(
                 tooltip: 'My Task',
                 onPressed: () {},
                 child: Icon(Icons.check_circle, color: AppDesign.primaryText, size: 30),
               ),
               SizedBox(width: 20),
-              _verticalDivider(),
+              VerticalDividerWidget(),
               HoverIconButton(
                 tooltip: 'Profile',
                 onPressed: () {
@@ -83,20 +81,5 @@ class TopBar extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  // فاصل عمودي بين الأيقونات
-  Widget _verticalDivider() {
-    return Row(
-      children: [
-        SizedBox(width: 8),
-        Container(
-          height: 24,
-          width: 1,
-          color: AppDesign.primaryText,
-        ),
-        SizedBox(width: 8),
-      ],
-    );
-  }
+  } 
 }
