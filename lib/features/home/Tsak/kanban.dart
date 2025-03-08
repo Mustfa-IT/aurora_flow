@@ -33,7 +33,6 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
   late FocusNode titleFocusNode;
   bool _isDragAreaHovered = false;
   bool _isGroupHovered = false;
-  
 
   @override
   void initState() {
@@ -53,8 +52,6 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
     super.dispose();
   }
 
-
- 
   void _saveTitle() {
     setState(() {
       widget.column.title = titleEditingController.text.trim();
@@ -63,7 +60,6 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
     widget.onUpdate();
   }
 
- 
   void _submitTask() {
     String newTaskText = taskInputController.text.trim();
     if (newTaskText.isNotEmpty) {
@@ -75,7 +71,6 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
     });
   }
 
- 
   void _showColumnSettingsDialog() {
     List<Color> availableHeaderColors = [
       Colors.red,
@@ -126,7 +121,8 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: Text("Edit Section", style: Theme.of(context).textTheme.titleLarge),
+              title: Text("Edit Section",
+                  style: Theme.of(context).textTheme.titleLarge),
               content: Container(
                 width: 300,
                 height: 400,
@@ -134,7 +130,8 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Select Header Color:", style: Theme.of(context).textTheme.titleMedium),
+                      Text("Select Header Color:",
+                          style: Theme.of(context).textTheme.titleMedium),
                       Wrap(
                         spacing: 8,
                         children: availableHeaderColors.map((color) {
@@ -162,7 +159,8 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                         }).toList(),
                       ),
                       SizedBox(height: 16),
-                      Text("Select Icon:", style: Theme.of(context).textTheme.titleMedium),
+                      Text("Select Icon:",
+                          style: Theme.of(context).textTheme.titleMedium),
                       Wrap(
                         spacing: 8,
                         children: availableIcons.map((iconData) {
@@ -197,7 +195,8 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text("Cancel", style: Theme.of(context).textTheme.labelLarge),
+                  child: Text("Cancel",
+                      style: Theme.of(context).textTheme.labelLarge),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -220,7 +219,6 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
 
   @override
   Widget build(BuildContext context) {
-   
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Stack(
@@ -235,16 +233,15 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-               
                 Container(
                   padding: EdgeInsets.all(17),
                   decoration: BoxDecoration(
                     color: widget.column.headerColor,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(2)),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(2)),
                   ),
                   child: Row(
                     children: [
-                     
                       GestureDetector(
                         onTap: _showColumnSettingsDialog,
                         child: Icon(
@@ -254,7 +251,6 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                         ),
                       ),
                       SizedBox(width: 8),
-                     
                       Expanded(
                         child: AnimatedSwitcher(
                           duration: Duration(milliseconds: 200),
@@ -277,6 +273,8 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                                       contentPadding: EdgeInsets.symmetric(
                                           vertical: 10, horizontal: 4),
                                       border: OutlineInputBorder(),
+                                      fillColor: Colors.white,
+                                      filled: true,
                                     ),
                                     onEditingComplete: _saveTitle,
                                   ),
@@ -287,24 +285,26 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                                     setState(() {
                                       isEditingTitle = true;
                                     });
-                                    Future.delayed(Duration(milliseconds: 100), () {
+                                    Future.delayed(Duration(milliseconds: 100),
+                                        () {
                                       FocusScope.of(context)
                                           .requestFocus(titleFocusNode);
                                     });
                                   },
                                   child: Text(
                                     widget.column.title,
-                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
                                           color: Colors.white,
                                         ),
                                   ),
                                 ),
                         ),
                       ),
-                     
                       Row(
                         children: [
-                         
                           ReorderableDragStartListener(
                             index: widget.columnIndex,
                             child: MouseRegion(
@@ -330,7 +330,6 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                               ),
                             ),
                           ),
-                         
                           MouseRegion(
                             onEnter: (_) {
                               setState(() {
@@ -364,7 +363,6 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                     ],
                   ),
                 ),
-               
                 Expanded(
                   child: DragTarget<DraggedTaskData>(
                     onWillAccept: (data) => true,
@@ -375,7 +373,6 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                       return ListView(
                         padding: EdgeInsets.all(8),
                         children: [
-                         
                           if (widget.column.tasks.isEmpty)
                             Center(
                               child: Column(
@@ -386,39 +383,44 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                                   SizedBox(height: 8),
                                   Text(
                                     "No Task",
-                                    style: Theme.of(context).textTheme.titleLarge,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
                                   ),
                                 ],
                               ),
                             )
                           else ...[
-                           
                             for (var task in widget.column.tasks)
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
                                 child: Draggable<DraggedTaskData>(
                                   data: DraggedTaskData(
-                                      fromColumn: widget.columnIndex, task: task),
+                                      fromColumn: widget.columnIndex,
+                                      task: task),
                                   feedback: Material(
                                     elevation: 6.0,
                                     child: ConstrainedBox(
-                                      constraints: BoxConstraints(maxWidth: 300),
-                                      child: TaskCard(task: task, onAssign: () {}),
+                                      constraints:
+                                          BoxConstraints(maxWidth: 300),
+                                      child:
+                                          TaskCard(task: task, onAssign: () {}),
                                     ),
                                   ),
                                   childWhenDragging: Opacity(
                                     opacity: 0.5,
-                                    child: TaskCard(task: task, onAssign: () {}),
+                                    child:
+                                        TaskCard(task: task, onAssign: () {}),
                                   ),
                                   child: TaskCard(task: task, onAssign: () {}),
                                 ),
                               ),
                           ],
-                         
                           AnimatedSwitcher(
                             duration: Duration(milliseconds: 200),
                             transitionBuilder: (child, animation) =>
-                                FadeTransition(opacity: animation, child: child),
+                                FadeTransition(
+                                    opacity: animation, child: child),
                             child: isAddingTask
                                 ? Focus(
                                     key: ValueKey("addTask"),
@@ -445,7 +447,8 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                                       setState(() {
                                         isAddingTask = true;
                                       });
-                                      Future.delayed(Duration(milliseconds: 100), () {
+                                      Future.delayed(
+                                          Duration(milliseconds: 100), () {
                                         FocusScope.of(context)
                                             .requestFocus(taskFocusNode);
                                       });
