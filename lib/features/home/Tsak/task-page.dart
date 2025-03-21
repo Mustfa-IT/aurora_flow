@@ -1,15 +1,15 @@
-
 import 'package:flutter/material.dart';
+import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/home/Tsak/add-section.dart';
 import 'package:task_app/features/home/Tsak/kanban.dart';
 import 'package:task_app/features/home/Tsak/top-bar-task.dart';
 import 'package:task_app/features/home/view/pages/home_page.dart';
+import 'package:task_app/features/home/view/widget/profile_drawer.dart';
 
 class Task {
   final String title;
   Task({required this.title});
 }
-
 
 class ColumnModel {
   String title;
@@ -27,7 +27,6 @@ class ColumnModel {
   });
 }
 
-
 class DraggedTaskData {
   final int fromColumn;
   final Task task;
@@ -35,18 +34,16 @@ class DraggedTaskData {
 }
 
 class TaskPage extends StatefulWidget {
-  
-  const TaskPage({super.key});
+  final User user;
+  const TaskPage({super.key, required this.user});
 
   @override
   _TaskPageState createState() => _TaskPageState();
 }
 
 class _TaskPageState extends State<TaskPage> {
- 
   Color backgroundColor = Colors.blueGrey;
 
- 
   List<ColumnModel> columns = [
     ColumnModel(
       title: "Open",
@@ -71,7 +68,6 @@ class _TaskPageState extends State<TaskPage> {
     ),
   ];
 
- 
   void _addTask(int columnIndex, String taskTitle) {
     if (taskTitle.trim().isNotEmpty) {
       setState(() {
@@ -80,7 +76,6 @@ class _TaskPageState extends State<TaskPage> {
     }
   }
 
- 
   void _addColumn(String columnTitle) {
     if (columnTitle.trim().isNotEmpty) {
       setState(() {
@@ -97,7 +92,6 @@ class _TaskPageState extends State<TaskPage> {
     }
   }
 
- 
   void _onReorderColumn(int oldIndex, int newIndex) {
     if (oldIndex >= columns.length || newIndex > columns.length - 1) return;
     setState(() {
@@ -110,17 +104,17 @@ class _TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      endDrawer: ProfileDrawer(
+        user: widget.user,
+      ),
       backgroundColor: backgroundColor,
-     
       body: Column(
         children: [
-         
-          const TopBarTask(),
+          TopBarTask(user: widget.user),
           Expanded(
             child: ReorderableListView.builder(
               scrollDirection: Axis.horizontal,
               onReorder: _onReorderColumn,
-             
               buildDefaultDragHandles: false,
               itemCount: columns.length + 1,
               itemBuilder: (context, index) {
@@ -146,7 +140,6 @@ class _TaskPageState extends State<TaskPage> {
                     ),
                   );
                 } else {
-                 
                   return Container(
                     key: ValueKey("add_column"),
                     margin: EdgeInsets.only(right: 8),

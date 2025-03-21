@@ -3,21 +3,37 @@
 // =============================================
 // القائمة المنزلقة التي تظهر عند اختيار تبويب معين (مثل المشاريع)
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:task_app/core/common/app-design.dart';
-import 'package:task_app/features/home/view/widget/data_models.dart';
+import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
+import 'package:task_app/features/home/domain/entities/project.dart';
+import 'package:task_app/features/home/domain/repository/project_repo.dart';
+import 'package:task_app/features/home/view/bloc/project_bloc.dart';
+import 'package:task_app/injection_container.dart';
 
-class SlidingMenu extends StatelessWidget {
+class SlidingMenu extends StatefulWidget {
   final int selectedMenu;
-  final List<Project> projects;
   final VoidCallback onClose;
 
   const SlidingMenu({
     super.key,
     required this.selectedMenu,
-    required this.projects,
     required this.onClose,
   });
+
+  @override
+  State<SlidingMenu> createState() => _SlidingMenuState();
+}
+
+class _SlidingMenuState extends State<SlidingMenu> {
+  List<Project>? projects;
+
+  @override
+  void initState() {
+    sl<ProjectBloc>().add(RequestProjectsEvent());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +45,7 @@ class SlidingMenu extends StatelessWidget {
         children: [
           _buildHeader(),
           Divider(height: 1, color: Colors.white12),
-          Expanded(child: _buildMenuContent()),
+          Expanded(child: _buildMenuContent(context)),
         ],
       ),
     );
@@ -49,7 +65,7 @@ class SlidingMenu extends StatelessWidget {
           Spacer(),
           IconButton(
             icon: Icon(Icons.close, color: Colors.white),
-            onPressed: onClose,
+            onPressed: widget.onClose,
           ),
         ],
       ),
@@ -58,7 +74,7 @@ class SlidingMenu extends StatelessWidget {
 
   // تحديد العنوان بناءً على التبويب المحدد
   String _getTitle() {
-    switch (selectedMenu) {
+    switch (widget.selectedMenu) {
       case 0:
         return 'Projects';
       case 1:
@@ -71,10 +87,10 @@ class SlidingMenu extends StatelessWidget {
   }
 
   // محتوى القائمة المنزلقة بناءً على التبويب
-  Widget _buildMenuContent() {
-    switch (selectedMenu) {
+  Widget _buildMenuContent(context) {
+    switch (widget.selectedMenu) {
       case 0:
-        return _buildProjectsContent();
+        return _buildProjectsContent(context);
       case 1:
         return _buildSearchContent();
       case 2:
@@ -85,38 +101,58 @@ class SlidingMenu extends StatelessWidget {
   }
 
   // محتوى تبويب المشاريع
-  Widget _buildProjectsContent() {
-    return ListView(
-      padding: EdgeInsets.all(16),
-      children: [
-        _buildMenuItem(Icons.add, 'Create Project'),
-        _buildMenuItem(Icons.dashboard, 'Overview'),
-        Divider(height: 24, color: Colors.white12),
-        if (projects.isEmpty)
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Text(
-              'You don’t have any projects yet.\nClick + to create or import projects.',
-              style: TextStyle(color: AppDesign.inactiveIconColor, height: 1.5),
+  Widget _buildProjectsContent(context) {
+    return BlocListener<ProjectBloc, ProjectState>(
+      listener: (context, state) {
+        print("Projects Changes" + state.projects.toString());
+        setState(() {
+          projects = state.projects;
+        });
+      },
+      child: ListView(
+        padding: EdgeInsets.all(16),
+        children: [
+          _buildMenuItem(Icons.add, 'Create Project', onTap: () {
+            createProjectCallback();
+          }),
+          _buildMenuItem(Icons.dashboard, 'Overview'),
+          Divider(height: 24, color: Colors.white12),
+          if (projects == null || projects!.isEmpty)
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'You don’t have any projects yet.\nClick + to create or import projects.',
+                style:
+                    TextStyle(color: AppDesign.inactiveIconColor, height: 1.5),
+              ),
             ),
-          ),
-        ...projects
-            .map((p) => ListTile(
-                  title: Text(p.name, style: TextStyle(color: Colors.white)),
-                  subtitle: Text(DateFormat.yMMMd().format(p.createdAt),
+          if (projects != null)
+            ...projects!.map((p) => ListTile(
+                  title: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () => {
+                        sl<ProjectBloc>()
+                            .add(ChangeCurrentProjectEvent(id: p.id))
+                      },
+                      child:
+                          Text(p.name, style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                  subtitle: Text(DateFormat.yMMMd().format(p.created),
                       style: TextStyle(color: AppDesign.inactiveIconColor)),
-                ))
-            .toList(),
-      ],
+                )),
+        ],
+      ),
     );
   }
 
   // عنصر مشترك لقائمة العناصر في القائمة المنزلقة
-  Widget _buildMenuItem(IconData icon, String label) {
+  Widget _buildMenuItem(IconData icon, String label, {VoidCallback? onTap}) {
     return ListTile(
       leading: Icon(icon, color: Colors.white),
       title: Text(label, style: TextStyle(color: Colors.white)),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 
@@ -183,6 +219,102 @@ class SlidingMenu extends StatelessWidget {
         ),
         child: Text(label, style: TextStyle(color: Colors.white)),
       ),
+    );
+  }
+
+  void createProjectCallback() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        String projectName = '';
+        String projectDescription = '';
+        return AlertDialog(
+          backgroundColor: AppDesign.sidebarBackground,
+          title: Text(
+            'Create Project',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Project Name',
+                  labelStyle: TextStyle(color: AppDesign.inactiveIconColor),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppDesign.inactiveIconColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+                onChanged: (value) {
+                  projectName = value;
+                },
+              ),
+              SizedBox(height: 16),
+              TextField(
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Project Description',
+                  labelStyle: TextStyle(color: AppDesign.inactiveIconColor),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppDesign.inactiveIconColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+                onChanged: (value) {
+                  projectDescription = value;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel', style: TextStyle(color: Colors.white)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+              onPressed: () {
+                if (projectName.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Project Name cannot be empty'),
+                    ),
+                  );
+                  return;
+                }
+
+                // Check if the user is not null before creating the project
+                final currentUser = sl<AuthBloc>().state.user;
+                if (currentUser == null) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('User not logged in')),
+                  );
+                  return;
+                }
+
+                sl.get<ProjectRepository>().createProject(
+                      projectName,
+                      projectDescription,
+                      currentUser.id,
+                    );
+                Navigator.pop(context);
+              },
+              child: Text('Create'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

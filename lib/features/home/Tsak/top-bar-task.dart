@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:task_app/core/config/config.dart';
+import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/home/view/widget/hoverIcon_button.dart';
 import 'package:task_app/features/home/view/widget/vertical-divider.dart';
 
 class TopBarTask extends StatelessWidget {
-  const TopBarTask({Key? key}) : super(key: key);
+  final User user;
+  const TopBarTask({super.key, required this.user});
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 70,
-      color: Colors.white70,
+      color: Colors.white,
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -19,7 +22,6 @@ class TopBarTask extends StatelessWidget {
             child: Icon(Icons.menu,
                 color: const Color.fromARGB(221, 48, 48, 48), size: 30),
           ),
-         
           Row(
             children: [
               SizedBox(width: 20),
@@ -47,9 +49,7 @@ class TopBarTask extends StatelessWidget {
               SizedBox(width: 20),
               HoverIconButton(
                 tooltip: 'Add',
-                onPressed: () {
-                  
-                },
+                onPressed: () {},
                 child: Icon(Icons.add, color: Colors.black87, size: 30),
               ),
               SizedBox(width: 20),
@@ -74,11 +74,11 @@ class TopBarTask extends StatelessWidget {
                   Scaffold.of(context).openEndDrawer();
                 },
                 child: CircleAvatar(
-                  backgroundImage: AssetImage('assets/profile.jpg'),
-                  radius: 20,
+                  backgroundImage: NetworkImage(
+                      '${Config.pocketBaseUrl}/api/files/${user.collectionId}/${user.id}/${user.avatar}'),
+                  radius: 18,
                 ),
               ),
-              SizedBox(width: 10),
             ],
           ),
         ],

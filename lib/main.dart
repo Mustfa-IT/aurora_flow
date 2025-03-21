@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_app/features/auth/view/pages/login_page.dart';
 import 'package:task_app/features/auth/view/pages/register_page.dart';
 import 'package:task_app/features/auth/view/pages/verify_email_page.dart';
+import 'package:task_app/features/home/view/bloc/project_bloc.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
 import 'package:task_app/features/auth/view/pages/auth_page.dart';
@@ -36,10 +37,13 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthBloc>(
           create: (context) => sl<AuthBloc>()..add(const AuthCheckSession()),
         ),
+        BlocProvider<ProjectBloc>(
+          create: (context) => sl<ProjectBloc>(),
+        ),
       ],
       child: MaterialApp(
         routes: {
-          '/home': (context) =>  HomePage(),
+          '/home': (context) => HomePage(),
           '/login': (context) => const LoginPage(),
           '/register': (context) => const RegisterPage(),
           '/auth': (context) => const AuthPage(),
@@ -56,7 +60,7 @@ class MyApp extends StatelessWidget {
               ));
             } else if (state is AuthSessionActive) {
               print("User is logged in");
-              return  HomePage();
+              return HomePage();
             } else {
               return const AuthPage();
             }

@@ -5,12 +5,13 @@ import 'package:task_app/features/auth/view/bloc/auth_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:task_app/core/common/app-design.dart';
 import 'package:task_app/features/home/Tsak/task-page.dart';
-import 'package:task_app/features/home/view/widget/data_models.dart';
+import 'package:task_app/features/home/view/bloc/project_bloc.dart';
 import 'package:task_app/features/home/view/widget/main_dashboard.dart';
 import 'package:task_app/features/home/view/widget/profile_drawer.dart';
 import 'package:task_app/features/home/view/widget/side_navigation_bar.dart';
 import 'package:task_app/features/home/view/widget/sliding_menu.dart';
 import 'package:task_app/features/home/view/widget/top_bar.dart';
+
 // =============================================
 // Home Page Widget
 // =============================================
@@ -25,11 +26,7 @@ class _HomePageState extends State<HomePage> {
   late String _time;
   late String _greeting;
 
- 
   User? _user;
-  final List<Project> _projects = [
-    Project(id: '1', name: 'Project 1', createdAt: DateTime.now()),
-  ];
 
   @override
   void initState() {
@@ -38,14 +35,12 @@ class _HomePageState extends State<HomePage> {
     _updateTime();
   }
 
- 
   void _toggleSlidingMenu() {
     setState(() {
       _showSlidingMenu = !_showSlidingMenu;
     });
   }
 
- 
   void _updateTime() {
     final now = DateTime.now();
     setState(() {
@@ -55,7 +50,6 @@ class _HomePageState extends State<HomePage> {
     Future.delayed(Duration(seconds: 30), _updateTime);
   }
 
- 
   String _getGreeting(DateTime time) {
     final hour = time.hour;
     if (hour < 12) return 'Good Morning';
@@ -65,27 +59,22 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-   
     double leftWidth = AppDesign.sidebarWidth +
         (_showSlidingMenu ? AppDesign.slidingMenuWidth : 0);
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-       
         if (state is! AuthSessionActive) {
           Navigator.of(context).pushReplacementNamed('/login');
         }
         _user = state.user;
-        print(state.user!.name);
       },
       child: Scaffold(
-       
         endDrawer: ProfileDrawer(
           user: _user!,
         ),
         body: Row(
           children: [
-           
             Container(
               width: leftWidth,
               height: double.infinity,
@@ -102,19 +91,17 @@ class _HomePageState extends State<HomePage> {
                   ),
                   if (_showSlidingMenu)
                     Positioned(
-                      left: AppDesign.sidebarWidth,
-                      top: 0,
-                      bottom: 0,
-                      child: SlidingMenu(
-                        selectedMenu: _selectedTab,
-                        projects: _projects,
-                        onClose: () => setState(() => _showSlidingMenu = false),
-                      ),
-                    ),
+                        left: AppDesign.sidebarWidth,
+                        top: 0,
+                        bottom: 0,
+                        child: SlidingMenu(
+                          selectedMenu: _selectedTab,
+                          onClose: () =>
+                              setState(() => _showSlidingMenu = false),
+                        )),
                 ],
               ),
             ),
-           
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -130,23 +117,30 @@ class _HomePageState extends State<HomePage> {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: Column(
-                  children: [
-                    // TopBar(
-                    //   onMenuPressed: _toggleSlidingMenu,
-                    //   user: _user!,
-                    // ),
-                    // Expanded(
-                    //   child: MainDashboard(
-                    //     userName: _user?.name ?? 'Guest',
-                    //     timeString: _time,
-                    //     greeting: _greeting,
-                    //   ),
-                    // ),
-                    Expanded(
-                      child: TaskPage(),
-                    ),
-                  ],
+                child: BlocBuilder<ProjectBloc, ProjectState>(
+                  builder: (context, state) {
+                    if (state.currentProject == null) {
+                      return Column(
+                        children: [
+                          TopBar(
+                            onMenuPressed: _toggleSlidingMenu,
+                            user: _user!,
+                          ),
+                          Expanded(
+                            child: MainDashboard(
+                              userName: _user?.name ?? 'Guest',
+                              timeString: _time,
+                              greeting: _greeting,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return TaskPage(
+                      user: _user!,
+                    );
+                  },
                 ),
               ),
             ),
