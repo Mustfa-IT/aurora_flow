@@ -43,7 +43,6 @@ class _AddColumnWidgetState extends State<AddColumnWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-         
           Container(
             padding: EdgeInsets.all(22),
             decoration: BoxDecoration(
@@ -74,8 +73,6 @@ class _AddColumnWidgetState extends State<AddColumnWidget> {
               ],
             ),
           ),
-
-         
           if (isAdding)
             Padding(
               padding: EdgeInsets.all(12),
@@ -98,8 +95,6 @@ class _AddColumnWidgetState extends State<AddColumnWidget> {
                 ),
               ),
             ),
-
-         
           Expanded(
             child: Center(
               child: Padding(
@@ -128,4 +123,3 @@ class _AddColumnWidgetState extends State<AddColumnWidget> {
     );
   }
 }
-

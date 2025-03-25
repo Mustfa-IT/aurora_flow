@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:task_app/core/common/app-design.dart';
 import 'package:task_app/features/home/Tsak/task-card.dart';
+import 'package:task_app/features/home/Tsak/task-detail.dart';
 import 'package:task_app/features/home/Tsak/task-page.dart';
+import 'package:task_app/features/home/Tsak/timer.dart';
 import 'package:task_app/features/home/view/widget/hoverIcon_button.dart';
+
 
 class KanbanColumnWidget extends StatefulWidget {
   final ColumnModel column;
@@ -11,6 +14,10 @@ class KanbanColumnWidget extends StatefulWidget {
   final Function(int, String) onAddTask;
   final Function(int, DraggedTaskData) onTaskDropped;
   final VoidCallback onUpdate;
+  // دالة تُعيد القائمة الحالية للأقسام (من TaskPage.columns)
+  final List<ColumnModel> Function() getCurrentColumns;
+  // كولباك لنقل المهمة عند اختيار السكشن المناسب
+  final Function(Task task, String selectedSection) onMoveTask;
 
   KanbanColumnWidget({
     required this.column,
@@ -18,6 +25,8 @@ class KanbanColumnWidget extends StatefulWidget {
     required this.onAddTask,
     required this.onTaskDropped,
     required this.onUpdate,
+    required this.getCurrentColumns,
+    required this.onMoveTask,
   });
 
   @override
@@ -396,23 +405,62 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                                     const EdgeInsets.symmetric(vertical: 4.0),
                                 child: Draggable<DraggedTaskData>(
                                   data: DraggedTaskData(
-                                      fromColumn: widget.columnIndex,
-                                      task: task),
+                                    fromColumn: widget.columnIndex,
+                                    task: task,
+                                  ),
                                   feedback: Material(
                                     elevation: 6.0,
                                     child: ConstrainedBox(
                                       constraints:
                                           BoxConstraints(maxWidth: 300),
-                                      child:
-                                          TaskCard(task: task, onAssign: () {}),
+                                      child: TaskCard(
+                                        task: task,
+                                        onAssign: () {},
+                                        getCurrentColumns:
+                                            widget.getCurrentColumns,
+                                        onMoveTask: widget.onMoveTask,
+                                      ),
                                     ),
                                   ),
                                   childWhenDragging: Opacity(
                                     opacity: 0.5,
-                                    child:
-                                        TaskCard(task: task, onAssign: () {}),
+                                    child: TaskCard(
+                                      task: task,
+                                      onAssign: () {},
+                                      getCurrentColumns:
+                                          widget.getCurrentColumns,
+                                      onMoveTask: widget.onMoveTask,
+                                    ),
                                   ),
-                                  child: TaskCard(task: task, onAssign: () {}),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => TaskDetailPopup(
+                                          task: task,
+                                          onClose: () =>
+                                              Navigator.of(context).pop(),
+                                          onSave: () {
+                                            setState(() {});
+                                          },
+                                          sections: widget.getCurrentColumns(),
+                                          onMoveTask: (selectedSection) {
+                                            widget.onMoveTask(
+                                                task, selectedSection);
+                                          },
+                                          timerController: TimerController(
+                                              initialSeconds: 0),
+                                        ),
+                                      );
+                                    },
+                                    child: TaskCard(
+                                      task: task,
+                                      onAssign: () {},
+                                      getCurrentColumns:
+                                          widget.getCurrentColumns,
+                                      onMoveTask: widget.onMoveTask,
+                                    ),
+                                  ),
                                 ),
                               ),
                           ],
@@ -431,15 +479,16 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                                       }
                                     },
                                     child: TextField(
-                                      controller: taskInputController,
-                                      autofocus: true,
-                                      maxLines: null,
-                                      decoration: InputDecoration(
-                                        hintText: "Enter task title...",
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      onEditingComplete: _submitTask,
-                                    ),
+  controller: taskInputController,
+  autofocus: true,
+  maxLines: 1, // لجعل حقل الإدخال سطر واحد
+  textInputAction: TextInputAction.done, // لتحديد زر الإرسال في لوحة المفاتيح
+  decoration: InputDecoration(
+    hintText: "Enter task title...",
+    border: OutlineInputBorder(),
+  ),
+  onSubmitted: (_) => _submitTask(), // عند الضغط على Enter يتم استدعاء دالة الإضافة
+)
                                   )
                                 : TextButton.icon(
                                     key: ValueKey("showAddTask"),

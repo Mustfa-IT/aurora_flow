@@ -4,6 +4,8 @@ import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/home/view/widget/hoverIcon_button.dart';
 import 'package:task_app/features/home/view/widget/vertical-divider.dart';
 
+
+
 class TopBarTask extends StatelessWidget {
   final User user;
   const TopBarTask({super.key, required this.user});
@@ -47,12 +49,7 @@ class TopBarTask extends StatelessWidget {
                 child: Icon(Icons.timer, color: Colors.black87, size: 30),
               ),
               SizedBox(width: 20),
-              HoverIconButton(
-                tooltip: 'Add',
-                onPressed: () {},
-                child: Icon(Icons.add, color: Colors.black87, size: 30),
-              ),
-              SizedBox(width: 20),
+              
               HoverIconButton(
                 tooltip: 'Notifications',
                 onPressed: () {},

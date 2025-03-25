@@ -45,12 +45,7 @@ class TopBar extends StatelessWidget {
                 onPressed: () {},
                 child: Icon(Icons.timer, color: AppDesign.primaryText, size: 30),
               ), SizedBox(width: 20),
-              HoverIconButton(
-                tooltip: 'Add',
-                onPressed: () {},
-                child: Icon(Icons.add, color: AppDesign.primaryText, size: 30),
-              ),
-              SizedBox(width: 20),
+             
               HoverIconButton(
                 tooltip: 'Notifications',
                 onPressed: () {},

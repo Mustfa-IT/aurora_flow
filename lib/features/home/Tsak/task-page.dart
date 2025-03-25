@@ -3,12 +3,46 @@ import 'package:task_app/features/auth/domain/entities/user.dart';
 import 'package:task_app/features/home/Tsak/add-section.dart';
 import 'package:task_app/features/home/Tsak/kanban.dart';
 import 'package:task_app/features/home/Tsak/top-bar-task.dart';
-import 'package:task_app/features/home/view/pages/home_page.dart';
 import 'package:task_app/features/home/view/widget/profile_drawer.dart';
 
+
+
+
+class UserModel {
+  final String username;
+  final String imageUrl;
+
+  UserModel({required this.username, required this.imageUrl});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserModel &&
+          runtimeType == other.runtimeType &&
+          username == other.username &&
+          imageUrl == other.imageUrl;
+
+  @override
+  int get hashCode => username.hashCode ^ imageUrl.hashCode;
+}
+
+/// Task model with counter data and a list of assigned users.
 class Task {
-  final String title;
-  Task({required this.title});
+  String title;
+  String description;
+  DateTime? dueDate;
+  List<String> tags;
+  List<UserModel> assignedUsers;
+  int elapsedSeconds; // Timer counter
+
+  Task({
+    required this.title,
+    this.description = '',
+    this.dueDate,
+    this.tags = const [],
+    this.assignedUsers = const [],
+    this.elapsedSeconds = 0,
+  });
 }
 
 class ColumnModel {
@@ -137,6 +171,27 @@ class _TaskPageState extends State<TaskPage> {
                       onUpdate: () {
                         setState(() {});
                       },
+                      // تمرير دالة تُعيد القائمة الحالية للأقسام
+                      getCurrentColumns: () => columns,
+                      // دالة نقل المهمة عند اختيار السكشن المناسب
+                      onMoveTask: (Task task, String selectedSection) {
+                        setState(() {
+                          // إزالة المهمة من القسم الحالي
+                          for (var col in columns) {
+                            if (col.tasks.contains(task)) {
+                              col.tasks.remove(task);
+                              break;
+                            }
+                          }
+                          // إضافة المهمة إلى القسم الذي عنوانه يطابق selectedSection
+                          for (var col in columns) {
+                            if (col.title == selectedSection) {
+                              col.tasks.add(task);
+                              break;
+                            }
+                          }
+                        });
+                      },
                     ),
                   );
                 } else {
@@ -158,3 +213,12 @@ class _TaskPageState extends State<TaskPage> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
