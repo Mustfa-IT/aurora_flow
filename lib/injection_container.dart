@@ -33,6 +33,12 @@ import 'package:task_app/features/auth/domain/usecases/reset_password.dart';
 import 'package:task_app/features/auth/domain/usecases/send_verification_email.dart';
 import 'package:task_app/features/auth/domain/usecases/update_avatar.dart';
 import 'package:task_app/features/auth/domain/usecases/update_username.dart';
+import 'package:task_app/features/home/data/data_sources/category_remote_source.dart';
+import 'package:task_app/features/home/data/data_sources/project_remote_source.dart';
+import 'package:task_app/features/home/data/data_sources/task_remote_source.dart';
+import 'package:task_app/features/home/data/repository/project_repo_impl.dart';
+import 'package:task_app/features/home/domain/repository/project_repo.dart';
+import 'package:task_app/features/home/view/bloc/project_bloc.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:get_it/get_it.dart';
@@ -54,7 +60,31 @@ Future<void> setupLocator(SharedPreferences sharedPreferences) async {
   // Create and register a global PocketBase instance configured with the AsyncAuthStore.
   final pocketBase = PocketBase(Config.pocketBaseUrl, authStore: authStore);
   sl.registerLazySingleton<PocketBase>(() => pocketBase);
+  initAuth();
+  initPojects();
+}
 
+void initPojects() async {
+  // Register the remote data source.
+  sl.registerLazySingleton<ProjectRemoteDataSource>(
+    () => ProjectRemoteDataSourceImpl(pocketBase: sl<PocketBase>()),
+  );
+
+  // Register the repository (injecting the remote data source).
+  sl.registerLazySingleton<ProjectRepository>(
+    () =>
+        ProjectRepositoryImpl(remoteDataSource: sl<ProjectRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<ProjectBloc>(
+      () => ProjectBloc(sl<ProjectRepository>()));
+
+  sl.registerSingleton<TaskRemoteDataSource>(
+      TaskRemoteDataSourceImpl(pocketBase: sl<PocketBase>()));
+  sl.registerSingleton<CategoryRemoteSource>(
+      CategoryRemoteSourceImpl(pocketBase: sl<PocketBase>()));
+}
+
+void initAuth() async {
   // Register the remote data source, now injecting the shared PocketBase instance.
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(pocketBase: sl<PocketBase>()),
@@ -87,7 +117,7 @@ Future<void> setupLocator(SharedPreferences sharedPreferences) async {
   //  Register the update avatar use case.
   sl.registerLazySingleton(() => UpdateAvatar(sl<AuthRepository>()));
   // Register the AuthBloc.
-  sl.registerFactory<AuthBloc>(
+  sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
         login: sl<Login>(),
         pocketBase: sl<PocketBase>(),

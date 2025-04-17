@@ -124,7 +124,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (failure) => emit(AuthFailure(error: failure.message)),
         (user) => emit(AuthSuccess(user: user)),
       );
-    } catch (e) {
+    } catch (e) { 
       emit(AuthFailure(error: e.toString()));
     }
   }
@@ -133,6 +133,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthCheckSession event,
     Emitter<AuthState> emit,
   ) async {
+    print('Checking session');
     if (pocketBase.authStore.isValid) {
       final result = await refreshToken();
       result.fold(
@@ -146,6 +147,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _checkAuthStore(Emitter<AuthState> emit) async {
     final record = pocketBase.authStore.record;
+    print('Checking auth store ' + record.toString());
     if (record != null && pocketBase.authStore.isValid) {
       try {
         final user = User.fromJson(record.toJson());
