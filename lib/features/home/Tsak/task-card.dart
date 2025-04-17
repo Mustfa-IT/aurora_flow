@@ -1,14 +1,15 @@
-
 import 'package:flutter/material.dart';
 import 'package:task_app/features/home/Tsak/assign-users.dart';
 import 'package:task_app/features/home/Tsak/task-detail.dart';
 import 'package:task_app/features/home/Tsak/task-page.dart';
 import 'package:task_app/features/home/Tsak/timer.dart';
+import 'package:task_app/features/home/domain/entities/category.dart';
+import 'package:task_app/features/home/domain/entities/task.dart';
 
 class TaskCard extends StatefulWidget {
   final Task task;
   final VoidCallback onAssign;
-  final List<ColumnModel> Function() getCurrentColumns;
+  final List<Category> Function() getCurrentColumns;
   final Function(Task task, String selectedSection) onMoveTask;
 
   const TaskCard({
@@ -24,13 +25,13 @@ class TaskCard extends StatefulWidget {
 }
 
 class _TaskCardState extends State<TaskCard> {
-  late TimerController _timerController;
+  // late TimerController _timerController;
 
   @override
   void initState() {
     super.initState();
-    _timerController =
-        TimerController(initialSeconds: widget.task.elapsedSeconds);
+    // _timerController =
+    //     TimerController(initialSeconds: widget.task.elapsedSeconds);
   }
 
   void _showUserDetails(UserModel user) {
@@ -61,7 +62,7 @@ class _TaskCardState extends State<TaskCard> {
 
   @override
   void dispose() {
-    _timerController.dispose();
+    // _timerController.dispose();
     super.dispose();
   }
 
@@ -110,7 +111,7 @@ class _TaskCardState extends State<TaskCard> {
           context: context,
           builder: (context) => TaskDetailPopup(
             task: widget.task,
-            timerController: _timerController,
+            // timerController: _timerController,
             onClose: () => Navigator.of(context).pop(),
             onSave: () {
               setState(() {
@@ -145,91 +146,97 @@ class _TaskCardState extends State<TaskCard> {
               ),
               const SizedBox(height: 8),
               // Task Description
-              if (widget.task.description.isNotEmpty)
-                Text(
-                  widget.task.description,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: const Color.fromARGB(255, 0, 28, 41),
-                  ),
+              // if (widget.task.description.isNotEmpty)
+              Text(
+                "Task Desc",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: const Color.fromARGB(255, 0, 28, 41),
                 ),
+              ),
               const SizedBox(height: 8),
               // Due Date and Status
-              if (widget.task.dueDate != null)
+              if (widget.task.dueTime != null)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Due: ${widget.task.dueDate!.year}-${widget.task.dueDate!.month}-${widget.task.dueDate!.day}",
+                      "Due: ${widget.task.dueTime!.year}-${widget.task.dueTime!.month}-${widget.task.dueTime!.day}",
                       style: TextStyle(
                         fontSize: 12,
                         color: const Color.fromARGB(255, 0, 19, 28),
                       ),
                     ),
-                    _buildDueStatus(widget.task.dueDate),
+                    _buildDueStatus(widget.task.dueTime),
                   ],
                 ),
               const SizedBox(height: 8),
-              // Tags
-              if (widget.task.tags.isNotEmpty)
-                Wrap(
-                  spacing: 6,
-                  children: widget.task.tags
-                      .map(
-                        (tag) => Chip(
-                          label: Text(
-                            tag,
-                            style: TextStyle(fontSize: 10),
-                          ),
-                          backgroundColor: Colors.blueAccent.withOpacity(0.2),
-                        ),
-                      )
-                      .toList(),
+              // // Tags
+              // if (widget.task.status ! null)
+              //   Wrap(
+              //     spacing: 6,
+              //     children: widget.task.tags
+              //         .map(
+              //           (tag) => Chip(
+              //             label: Text(
+              //               tag,
+              //               style: TextStyle(fontSize: 10),
+              //             ),
+              //             backgroundColor: Colors.blueAccent.withOpacity(0.2),
+              //           ),
+              //         )
+              //         .toList(),
+              //   ),
+              if (widget.task.status != null)
+                Text(
+                  widget.task.status!.name,
+                  style: TextStyle(fontSize: 10),
                 ),
               const SizedBox(height: 8),
               // Assigned Users
-              if (widget.task.assignedUsers.isNotEmpty ||
-                  widget.task.assignedUsers.isEmpty)
+              if (widget.task.assignedTo.isNotEmpty ||
+                  widget.task.assignedTo.isEmpty)
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    ...widget.task.assignedUsers.map((user) {
+                    ...widget.task.assignedTo.map((user) {
                       return GestureDetector(
-                        onTap: () => _showUserDetails(user),
+                        // TODO:FIX
+                        // onTap: () => _showUserDetails(user),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             CircleAvatar(
                               radius: 16,
-                              backgroundImage: NetworkImage(user.imageUrl),
+                              // backgroundImage: NetworkImage(user.imageUrl),
                             ),
                             SizedBox(height: 4),
-                            Text(
-                              user.username,
-                              style: TextStyle(fontSize: 10),
-                            ),
+                            // Text(
+                            //   user.username,
+                            //   style: TextStyle(fontSize: 10),
+                            // ),
                           ],
                         ),
                       );
                     }).toList(),
                     GestureDetector(
-                      onTap: () async {
-                        final List<UserModel>? selected =
-                            await showDialog<List<UserModel>>(
-                          context: context,
-                          builder: (context) => AssignUsersDialog(
-                            initialSelected: widget.task.assignedUsers,
-                          ),
-                        );
-                        if (selected != null) {
-                          setState(() {
-                            widget.task.assignedUsers = selected;
-                            // TODO: Update the backend with the new assigned users.
-                            // This may involve an API call to update the task details on the server.
-                          });
-                        }
-                      },
+                      // onTap: () async {
+                      //   final List<UserModel>? selected =
+                      //       await showDialog<List<UserModel>>(
+                      //     context: context,
+                      //     builder: (context) => AssignUsersDialog(
+                      //       initialSelected: widget.task.assignedUsers,
+                      //     ),
+                      //   );
+                      //   if (selected != null) {
+                      //     setState(() {
+                      //       widget.task.assignedUsers = selected;
+                      //       // TODO: Update the backend with the new assigned users.
+                      //       // This may involve an API call to update the task details on the server.
+                      //     });
+                      //   }
+                      // },
                       child: CircleAvatar(
                         radius: 16,
                         backgroundColor: Colors.blueAccent,
@@ -241,35 +248,35 @@ class _TaskCardState extends State<TaskCard> {
                 ),
               const SizedBox(height: 8),
               // Timer Display
-              ValueListenableBuilder<int>(
-                valueListenable: _timerController.elapsedSeconds,
-                builder: (context, seconds, _) {
-                  if (seconds > 0) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: _timerController.isRunning
-                            ? Colors.redAccent
-                            : Colors.greenAccent,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.timer, size: 16, color: Colors.black),
-                          SizedBox(width: 4),
-                          Text(
-                            "Timer: ${_timerController.formattedTime}",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return SizedBox.shrink();
-                  }
-                },
-              ),
+              // ValueListenableBuilder<int>(
+              //   valueListenable: _timerController.elapsedSeconds,
+              //   builder: (context, seconds, _) {
+              //     if (seconds > 0) {
+              //       return Container(
+              //         padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              //         decoration: BoxDecoration(
+              //           color: _timerController.isRunning
+              //               ? Colors.redAccent
+              //               : Colors.greenAccent,
+              //           borderRadius: BorderRadius.circular(8),
+              //         ),
+              //         child: Row(
+              //           mainAxisSize: MainAxisSize.min,
+              //           children: [
+              //             Icon(Icons.timer, size: 16, color: Colors.black),
+              //             SizedBox(width: 4),
+              //             Text(
+              //               "Timer: ${_timerController.formattedTime}",
+              //               style: TextStyle(fontWeight: FontWeight.bold),
+              //             ),
+              //           ],
+              //         ),
+              //       );
+              //     } else {
+              //       return SizedBox.shrink();
+              //     }
+              //   },
+              // ),
             ],
           ),
         ),

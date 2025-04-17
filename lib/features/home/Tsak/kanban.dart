@@ -5,22 +5,27 @@ import 'package:task_app/features/home/Tsak/task-card.dart';
 import 'package:task_app/features/home/Tsak/task-detail.dart';
 import 'package:task_app/features/home/Tsak/task-page.dart';
 import 'package:task_app/features/home/Tsak/timer.dart';
+import 'package:task_app/features/home/data/data_sources/category_remote_source.dart';
+import 'package:task_app/features/home/data/models/category_model.dart';
+import 'package:task_app/features/home/domain/entities/category.dart';
+import 'package:task_app/features/home/domain/entities/task.dart';
+import 'package:task_app/features/home/view/bloc/project_bloc.dart';
 import 'package:task_app/features/home/view/widget/hoverIcon_button.dart';
-
+import 'package:task_app/injection_container.dart';
 
 class KanbanColumnWidget extends StatefulWidget {
-  final ColumnModel column;
+  final Category category;
   final int columnIndex;
   final Function(int, String) onAddTask;
   final Function(int, DraggedTaskData) onTaskDropped;
   final VoidCallback onUpdate;
   // دالة تُعيد القائمة الحالية للأقسام (من TaskPage.columns)
-  final List<ColumnModel> Function() getCurrentColumns;
+  final List<Category> Function() getCurrentColumns;
   // كولباك لنقل المهمة عند اختيار السكشن المناسب
   final Function(Task task, String selectedSection) onMoveTask;
 
   KanbanColumnWidget({
-    required this.column,
+    required this.category,
     required this.columnIndex,
     required this.onAddTask,
     required this.onTaskDropped,
@@ -47,7 +52,7 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
   void initState() {
     super.initState();
     taskInputController = TextEditingController();
-    titleEditingController = TextEditingController(text: widget.column.title);
+    titleEditingController = TextEditingController(text: widget.category.name);
     taskFocusNode = FocusNode();
     titleFocusNode = FocusNode();
   }
@@ -61,9 +66,13 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
     super.dispose();
   }
 
-  void _saveTitle() {
+  void _saveTitle() async {
+    // var c = (widget.category as CategoryModel);
+    // c.copyWith(name: titleEditingController.text.trim());
+    await sl<CategoryRemoteSource>()
+        .updateCategory(widget.category.id, titleEditingController.text.trim());
+    sl<ProjectBloc>().add(RequestProjectsEvent());
     setState(() {
-      widget.column.title = titleEditingController.text.trim();
       isEditingTitle = false;
     });
     widget.onUpdate();
@@ -119,11 +128,12 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
       Icons.build_outlined,
       Icons.support_agent_outlined,
       Icons.work_outline,
+      Icons.autorenew,
+      Icons.list_alt
     ];
-
-    Color selectedColor = widget.column.headerColor;
-    IconData selectedIcon = widget.column.icon;
-
+    Color selectedColor = Color(widget.category.color);
+    IconData selectedIcon = IconData(widget.category.icon);
+    print("Icons" + availableIcons.toString());
     showDialog(
       context: context,
       builder: (context) {
@@ -209,10 +219,12 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      widget.column.headerColor = selectedColor;
-                      widget.column.icon = selectedIcon;
-                    });
+                    //TODO:UPDATE THE BACKEND.
+
+                    // setState(() {
+                    //   Color(widget.category.color) = selectedColor.value;
+                    //   widget.category.icon = selectedIcon.codePoint;
+                    // });
                     widget.onUpdate();
                     Navigator.of(context).pop();
                   },
@@ -235,7 +247,7 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
           Container(
             width: 300,
             decoration: BoxDecoration(
-              color: widget.column.color,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(2),
             ),
             margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
@@ -245,7 +257,7 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                 Container(
                   padding: EdgeInsets.all(17),
                   decoration: BoxDecoration(
-                    color: widget.column.headerColor,
+                    color: Color(widget.category.color),
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(2)),
                   ),
@@ -254,7 +266,8 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                       GestureDetector(
                         onTap: _showColumnSettingsDialog,
                         child: Icon(
-                          widget.column.icon,
+                          IconData(widget.category.icon,
+                              fontFamily: 'MaterialIcons'),
                           color: Colors.white,
                           size: 35,
                         ),
@@ -301,7 +314,7 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                                     });
                                   },
                                   child: Text(
-                                    widget.column.title,
+                                    widget.category.name,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
@@ -382,7 +395,7 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                       return ListView(
                         padding: EdgeInsets.all(8),
                         children: [
-                          if (widget.column.tasks.isEmpty)
+                          if (widget.category.tasks.isEmpty)
                             Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -399,7 +412,7 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                               ),
                             )
                           else ...[
-                            for (var task in widget.column.tasks)
+                            for (var task in widget.category.tasks)
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 4.0),
@@ -448,8 +461,8 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                                             widget.onMoveTask(
                                                 task, selectedSection);
                                           },
-                                          timerController: TimerController(
-                                              initialSeconds: 0),
+                                          // timerController: TimerController(
+                                          //     initialSeconds: 0),
                                         ),
                                       );
                                     },
@@ -479,17 +492,18 @@ class _KanbanColumnWidgetState extends State<KanbanColumnWidget> {
                                       }
                                     },
                                     child: TextField(
-  controller: taskInputController,
-  autofocus: true,
-  maxLines: 1, // لجعل حقل الإدخال سطر واحد
-  textInputAction: TextInputAction.done, // لتحديد زر الإرسال في لوحة المفاتيح
-  decoration: InputDecoration(
-    hintText: "Enter task title...",
-    border: OutlineInputBorder(),
-  ),
-  onSubmitted: (_) => _submitTask(), // عند الضغط على Enter يتم استدعاء دالة الإضافة
-)
-                                  )
+                                      controller: taskInputController,
+                                      autofocus: true,
+                                      maxLines: 1, // لجعل حقل الإدخال سطر واحد
+                                      textInputAction: TextInputAction
+                                          .done, // لتحديد زر الإرسال في لوحة المفاتيح
+                                      decoration: InputDecoration(
+                                        hintText: "Enter task title...",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onSubmitted: (_) =>
+                                          _submitTask(), // عند الضغط على Enter يتم استدعاء دالة الإضافة
+                                    ))
                                 : TextButton.icon(
                                     key: ValueKey("showAddTask"),
                                     onPressed: () {

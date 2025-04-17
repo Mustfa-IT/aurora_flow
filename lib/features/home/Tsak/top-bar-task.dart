@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:task_app/core/config/config.dart';
 import 'package:task_app/features/auth/domain/entities/user.dart';
+import 'package:task_app/features/home/domain/entities/project.dart';
 import 'package:task_app/features/home/view/widget/hoverIcon_button.dart';
 import 'package:task_app/features/home/view/widget/vertical-divider.dart';
 
-
-
 class TopBarTask extends StatelessWidget {
   final User user;
-  const TopBarTask({super.key, required this.user});
+  final Project currentProject;
+  const TopBarTask({
+    super.key,
+    required this.user,
+    required this.currentProject,
+  });
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,6 +27,11 @@ class TopBarTask extends StatelessWidget {
             onPressed: () {},
             child: Icon(Icons.menu,
                 color: const Color.fromARGB(221, 48, 48, 48), size: 30),
+          ),
+          // TITLE
+          Text(
+            currentProject.name,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           Row(
             children: [
@@ -49,7 +58,6 @@ class TopBarTask extends StatelessWidget {
                 child: Icon(Icons.timer, color: Colors.black87, size: 30),
               ),
               SizedBox(width: 20),
-              
               HoverIconButton(
                 tooltip: 'Notifications',
                 onPressed: () {},

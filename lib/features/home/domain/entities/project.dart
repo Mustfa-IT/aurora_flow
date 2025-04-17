@@ -1,12 +1,11 @@
-import 'package:task_app/features/auth/domain/entities/user.dart';
-import 'package:task_app/features/home/domain/entities/Board.dart';
+import 'package:task_app/features/home/domain/entities/board.dart';
 
 class Project {
   final String id;
   final String name;
   final String description;
   final String owner;
-  final String board;
+  final Board board;
   final DateTime created;
   final DateTime updated;
 

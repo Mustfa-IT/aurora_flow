@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:task_app/features/home/data/models/board_model.dart';
+import 'package:task_app/features/home/domain/entities/board.dart';
 import 'package:task_app/features/home/domain/entities/project.dart';
+
 class ProjectModel extends Project {
   ProjectModel({
     required super.id,
@@ -10,15 +15,17 @@ class ProjectModel extends Project {
     required super.updated,
   });
 
-  factory ProjectModel.fromJson(Map<String, dynamic> json) {
+  factory ProjectModel.fromJson(Map<String, dynamic> source) {
+    final boardMap = source['expand']['board'] as Map<String, dynamic>;
+    print("From Json Project");
     return ProjectModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      owner: json['owner'] as String,
-      board: json['board'] as String,
-      created: DateTime.parse(json['created']),
-      updated: DateTime.parse(json['updated']),
+      id: source['id'] as String,
+      name: source['name'] as String,
+      description: source['description'] as String,
+      owner: source['owner'] as String,
+      board: BoardModel.fromMap(boardMap),
+      created: DateTime.parse(source['created']),
+      updated: DateTime.parse(source['updated']),
     );
   }
 

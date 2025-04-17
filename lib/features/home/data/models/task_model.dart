@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:task_app/features/home/data/models/status_model.dart';
 import 'package:task_app/features/home/domain/entities/task.dart';
 
 class TaskModel extends Task {
@@ -12,16 +15,17 @@ class TaskModel extends Task {
     required super.updated,
   });
 
-  factory TaskModel.fromJson(Map<String, dynamic> json) {
+  factory TaskModel.fromJson(Map<String, dynamic> source) {
+    print('From Json in TaskModel');
     return TaskModel(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String,
-      dueTime: DateTime.parse(json['due_time']),
-      status: json['status'] as String,
-      assignedTo: List<String>.from(json['assigned_to'] ?? []),
-      created: DateTime.parse(json['created']),
-      updated: DateTime.parse(json['updated']),
+      id: source['id'] as String,
+      title: source['title'] as String,
+      description: source['description'] as String,
+      dueTime: DateTime.parse(source['due_time']),
+      status: null,
+      assignedTo: List<String>.from(source['assigned_to'] ?? []),
+      created: DateTime.parse(source['created']),
+      updated: DateTime.parse(source['updated']),
     );
   }
 

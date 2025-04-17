@@ -33,7 +33,9 @@ import 'package:task_app/features/auth/domain/usecases/reset_password.dart';
 import 'package:task_app/features/auth/domain/usecases/send_verification_email.dart';
 import 'package:task_app/features/auth/domain/usecases/update_avatar.dart';
 import 'package:task_app/features/auth/domain/usecases/update_username.dart';
+import 'package:task_app/features/home/data/data_sources/category_remote_source.dart';
 import 'package:task_app/features/home/data/data_sources/project_remote_source.dart';
+import 'package:task_app/features/home/data/data_sources/task_remote_source.dart';
 import 'package:task_app/features/home/data/repository/project_repo_impl.dart';
 import 'package:task_app/features/home/domain/repository/project_repo.dart';
 import 'package:task_app/features/home/view/bloc/project_bloc.dart';
@@ -75,6 +77,11 @@ void initPojects() async {
   );
   sl.registerLazySingleton<ProjectBloc>(
       () => ProjectBloc(sl<ProjectRepository>()));
+
+  sl.registerSingleton<TaskRemoteDataSource>(
+      TaskRemoteDataSourceImpl(pocketBase: sl<PocketBase>()));
+  sl.registerSingleton<CategoryRemoteSource>(
+      CategoryRemoteSourceImpl(pocketBase: sl<PocketBase>()));
 }
 
 void initAuth() async {

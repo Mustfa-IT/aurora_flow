@@ -1,10 +1,12 @@
 
+import 'package:task_app/features/home/domain/entities/status.dart';
+
 class Task {
   final String id;
   final String title;
   final String description;
   final DateTime dueTime;
-  final String status;
+  final Status? status;
   final List<String> assignedTo;
   final DateTime created;
   final DateTime updated;

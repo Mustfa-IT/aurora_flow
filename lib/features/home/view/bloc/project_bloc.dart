@@ -25,7 +25,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
   ) async {
     emit(ProjectsLoading(projects: null, currentProject: state.currentProject));
     var projects = await _projectRepository.getProjects();
-    if (projects == null) {
+    if (projects == null || projects.isEmpty) {
       emit(ProjectInitial());
     } else {
       emit(GetProjectsSuccess(
@@ -39,7 +39,6 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
   ) async {
     if (state.projects != null) {
       var searchInList = state.projects!.firstWhere((p) => p.id == event.id);
-      // ignore: unnecessary_null_comparison
       if (searchInList != null) {
         emit(CurrentProjectChanged(
             currentProject: searchInList, projects: state.projects));
@@ -52,7 +51,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
             currentProject: project, projects: state.projects));
         return;
       }
-      print("Faild To Load Project");
+      print("Failed To Load Project");
       emit(FaildToLoadProject(currentProject: null, projects: state.projects));
     }
   }

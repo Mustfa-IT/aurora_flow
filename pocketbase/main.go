@@ -28,7 +28,6 @@ func main() {
 		boardRecord := core.NewRecord(collection)
 		boardRecord.Set("project", e.Record.Id)
 
-		
 		// validate and persist
 		// (use SaveNoValidate to skip fields validation)
 		err = app.Save(boardRecord)
@@ -36,12 +35,12 @@ func main() {
 			log.Println(err)
 			return err
 		}
-		ids,err := createCategories(boardRecord.Id,app)
+		ids, err := createCategories(boardRecord.Id, app)
 		if err != nil {
 			return err
 		}
-		if(ids!=nil){
-			boardRecord.Set("categories",ids)
+		if ids != nil {
+			boardRecord.Set("categories", ids)
 			err = app.Save(boardRecord)
 			if err != nil {
 				return err
@@ -71,12 +70,14 @@ func main() {
 	}
 }
 
-func createCategories(board string,app *pocketbase.PocketBase) ([]string,error) {
+func createCategories(board string, app *pocketbase.PocketBase) ([]string, error) {
 	collection, err := app.FindCollectionByNameOrId("categories")
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	titles := []string{"To Do", "In Pogress", "Done"}
+	colors := []int{4294901760, 4278190335, 4278255360}
+	icons := []int{58245, 57537, 58950}
 	ids := []string{}
 	app.RunInTransaction(func(txApp core.App) error {
 		for i, title := range titles {
@@ -84,6 +85,8 @@ func createCategories(board string,app *pocketbase.PocketBase) ([]string,error) 
 			record.Set("name", title)
 			record.Set("position", i)
 			record.Set("board", board)
+			record.Set("color", colors[i])
+			record.Set("icon",icons[i])
 			if err := txApp.Save(record); err != nil {
 				return err
 			}
@@ -91,5 +94,5 @@ func createCategories(board string,app *pocketbase.PocketBase) ([]string,error) 
 		}
 		return nil
 	})
-	return ids,nil
+	return ids, nil
 }

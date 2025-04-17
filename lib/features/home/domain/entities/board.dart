@@ -1,7 +1,9 @@
+import 'package:task_app/features/home/domain/entities/category.dart';
+
 class Board {
   final String id;
   final String project;
-  final List<String> categories;
+  final List<Category> categories;
   final DateTime created;
   final DateTime updated;
 

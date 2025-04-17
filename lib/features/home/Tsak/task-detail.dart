@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:task_app/features/home/Tsak/assign-users.dart';
 import 'package:task_app/features/home/Tsak/task-page.dart';
 import 'package:task_app/features/home/Tsak/timer.dart';
+import 'package:task_app/features/home/domain/entities/category.dart';
+import 'package:task_app/features/home/domain/entities/task.dart';
 
 /// Popup for task details.
 class TaskDetailPopup extends StatefulWidget {
   final Task task;
-  final TimerController timerController;
+  // final TimerController timerController;
   final VoidCallback onClose;
   final VoidCallback onSave;
   final Function(String)? onMoveTask;
-  final List<ColumnModel>? sections;
+  final List<Category>? sections;
 
   const TaskDetailPopup({
     Key? key,
     required this.task,
-    required this.timerController,
+    // required this.timerController,
     required this.onClose,
     required this.onSave,
     this.onMoveTask,
@@ -41,8 +43,8 @@ class _TaskDetailPopupState extends State<TaskDetailPopup>
     _titleController = TextEditingController(text: widget.task.title);
     _descriptionController =
         TextEditingController(text: widget.task.description);
-    _selectedDate = widget.task.dueDate;
-    _assignedUsers = List.from(widget.task.assignedUsers);
+    _selectedDate = widget.task.dueTime;
+    _assignedUsers = List.from(widget.task.assignedTo);
 
     _animationController = AnimationController(
       vsync: this,
@@ -60,7 +62,7 @@ class _TaskDetailPopupState extends State<TaskDetailPopup>
 
   void _toggleTimer() {
     setState(() {
-      widget.timerController.toggle();
+      // widget.timerController.toggle();
     });
   }
 
@@ -108,7 +110,7 @@ class _TaskDetailPopupState extends State<TaskDetailPopup>
   }
 
   Future<void> _openMoveTaskDialog() async {
-    List<ColumnModel> sections = widget.sections ?? [];
+    List<Category> sections = widget.sections ?? [];
     String? selectedSection = await showDialog<String>(
       context: context,
       builder: (context) {
@@ -120,9 +122,9 @@ class _TaskDetailPopupState extends State<TaskDetailPopup>
                   onPressed: () {
                     // TODO: When moving the task, call the backend API to update the task's section.
                     // Ensure that the server is informed about the new section assignment.
-                    Navigator.pop(context, section.title);
+                    Navigator.pop(context, section.name);
                   },
-                  child: Text(section.title),
+                  child: Text(section.name),
                 ),
               )
               .toList(),
@@ -136,11 +138,11 @@ class _TaskDetailPopupState extends State<TaskDetailPopup>
   }
 
   void _saveChanges() {
-    widget.task.title = _titleController.text;
-    widget.task.description = _descriptionController.text;
-    widget.task.dueDate = _selectedDate;
-    widget.task.assignedUsers = List.from(_assignedUsers);
-    widget.task.elapsedSeconds = widget.timerController.elapsedSeconds.value;
+    // widget.task.name = _titleController.text;
+    // widget.task.description = _descriptionController.text;
+    // widget.task.dueDate = _selectedDate;
+    // widget.task.assignedUsers = List.from(_assignedUsers);
+    // widget.task.elapsedSeconds = widget.timerController.elapsedSeconds.value;
     // TODO: Call the backend API to save the updated task details.
     // This is where you integrate with your backend to persist changes.
     widget.onSave();
@@ -317,28 +319,28 @@ class _TaskDetailPopupState extends State<TaskDetailPopup>
                             ),
                           ),
                           Divider(color: Colors.grey.shade300, thickness: 1),
-                          ElevatedButton.icon(
-                            style: buttonStyle.copyWith(
-                              backgroundColor: MaterialStateProperty.all(
-                                widget.timerController.isRunning ? Colors.redAccent : Colors.green,
-                              ),
-                            ),
-                            onPressed: _toggleTimer,
-                            icon: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                const Icon(Icons.timer, color: Colors.white),
-                                if (widget.timerController.isRunning)
-                                  const Icon(Icons.pause, size: 12, color: Colors.white),
-                              ],
-                            ),
-                            label: ValueListenableBuilder<int>(
-                              valueListenable: widget.timerController.elapsedSeconds,
-                              builder: (context, seconds, _) {
-                                return Text(widget.timerController.formattedTime);
-                              },
-                            ),
-                          ),
+                          // ElevatedButton.icon(
+                          //   style: buttonStyle.copyWith(
+                          //     backgroundColor: MaterialStateProperty.all(
+                          //       widget.timerController.isRunning ? Colors.redAccent : Colors.green,
+                          //     ),
+                          //   ),
+                          //   onPressed: _toggleTimer,
+                          //   icon: Stack(
+                          //     alignment: Alignment.center,
+                          //     children: [
+                          //       const Icon(Icons.timer, color: Colors.white),
+                          //       if (widget.timerController.isRunning)
+                          //         const Icon(Icons.pause, size: 12, color: Colors.white),
+                          //     ],
+                          //   ),
+                          //   label: ValueListenableBuilder<int>(
+                          //     valueListenable: widget.timerController.elapsedSeconds,
+                          //     builder: (context, seconds, _) {
+                          //       return Text(widget.timerController.formattedTime);
+                          //     },
+                          //   ),
+                          // ),
                           Divider(color: Colors.grey.shade300, thickness: 1),
                           ElevatedButton.icon(
                             style: buttonStyle,

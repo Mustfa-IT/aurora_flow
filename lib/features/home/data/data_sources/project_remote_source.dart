@@ -19,13 +19,14 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
 
   @override
   Future<List<ProjectModel>?> fetchProjects() async {
-    try {
-      final records = await pocketBase.collection('projects').getFullList();
+    {
+      final records = await pocketBase
+          .collection('projects')
+          .getFullList(expand: 'board,board.categories,board.categories.tasks');
+      print(records.asMap());
       return records
           .map((record) => ProjectModel.fromJson(record.toJson()))
           .toList();
-    } catch (e) {
-      return null;
     }
   }
 
